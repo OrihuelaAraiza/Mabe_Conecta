@@ -20,7 +20,7 @@ struct VacacionesView: View {
                 .padding(MabeTheme.horizontalPadding)
                 .padding(.bottom, 88)
             }
-            .background(Color.mabeGray100)
+            .background(Color.mabeBackground)
 
             Button {
                 viewModel.showingSheet = true
@@ -142,7 +142,7 @@ private struct CustomMonthCalendar: View {
                                 .foregroundStyle(isSelected ? .white : Color.mabeGray900)
                                 .frame(maxWidth: .infinity)
                                 .aspectRatio(1, contentMode: .fit)
-                                .background(isSelected ? Color.mabeBlue : Color.mabeGray100)
+                                .background(isSelected ? AnyShapeStyle(LinearGradient.mabeHero) : AnyShapeStyle(Color.mabeSurface2))
                                 .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
@@ -202,7 +202,7 @@ private struct NuevaSolicitudVacacionesSheet: View {
                         .font(.body)
                         .padding(14)
                         .frame(minHeight: 92, alignment: .topLeading)
-                        .background(Color.mabeGray100)
+                        .background(Color.mabeSurface2)
                         .overlay {
                             RoundedRectangle(cornerRadius: 10).stroke(Color.mabeGray200, lineWidth: 1)
                         }
@@ -215,7 +215,7 @@ private struct NuevaSolicitudVacacionesSheet: View {
                 }
             }
             .padding(MabeTheme.horizontalPadding)
-            .background(Color.mabeGray100)
+            .background(Color.mabeBackground)
             .navigationTitle("Nueva solicitud")
             .mabeNavigationBarTitleDisplayMode(.inline)
         }

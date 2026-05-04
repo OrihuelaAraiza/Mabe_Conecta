@@ -2,20 +2,15 @@ import SwiftUI
 
 struct MabeLogoView: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(Color.white)
-            .frame(width: 124, height: 64)
-            .overlay {
-                Text("MABE")
-                    .font(.system(size: 30, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.mabeBlue)
-                    .tracking(1.5)
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.mabeBlue.opacity(0.12), lineWidth: 1)
-            }
-            .mabeCardShadow()
+        Image("MabeLogoOfficial")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 154, height: 66)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 10)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: Color.mabeGray900.opacity(0.08), radius: 18, x: 0, y: 8)
             .accessibilityLabel("Mabe")
     }
 }

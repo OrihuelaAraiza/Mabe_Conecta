@@ -27,7 +27,7 @@ struct SolicitudesView: View {
                 }
             }
         }
-        .background(Color.mabeGray100)
+        .background(Color.mabeBackground)
         .navigationTitle("Mis Solicitudes")
         .mabeNavigationBarTitleDisplayMode(.large)
     }
@@ -44,7 +44,7 @@ struct SolicitudesView: View {
                         .font(.callout.weight(.semibold))
                         .foregroundStyle(viewModel.selectedSegment == segment ? .white : Color.mabeBlue)
                         .frame(maxWidth: .infinity, minHeight: 42)
-                        .background(viewModel.selectedSegment == segment ? Color.mabeBlue : Color.clear)
+                        .background(viewModel.selectedSegment == segment ? AnyShapeStyle(LinearGradient.mabeHero) : AnyShapeStyle(Color.clear))
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .buttonStyle(.plain)
@@ -52,7 +52,7 @@ struct SolicitudesView: View {
             }
         }
         .padding(4)
-        .background(Color.white)
+        .background(Color.mabeSurface)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .mabeCardShadow()
     }
@@ -67,11 +67,11 @@ private struct RequestCard: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(solicitud.tipo)
-                            .font(.body.weight(.semibold))
+                            .font(.mabeBody.weight(.semibold))
                             .foregroundStyle(Color.mabeGray900)
                         Text("Solicitada el \(solicitud.fecha.mabeShortDate)")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(Color.mabeGray500)
+                            .font(.mabeSub)
+                            .foregroundStyle(Color.mabeGray400)
                     }
 
                     Spacer()
@@ -95,25 +95,35 @@ private struct EmptyRequestsView: View {
     var body: some View {
         VStack(spacing: 18) {
             ZStack {
-                Circle()
-                    .fill(Color.mabeBlue.opacity(0.08))
-                    .frame(width: 116, height: 116)
+                Image(systemName: "doc.text")
+                    .font(.system(size: 78, weight: .semibold))
+                    .foregroundStyle(Color.mabeGray200)
+                    .offset(x: -18, y: 4)
                 Image(systemName: "tray")
-                    .font(.system(size: 44, weight: .semibold))
-                    .foregroundStyle(Color.mabeBlue)
+                    .font(.system(size: 54, weight: .semibold))
+                    .foregroundStyle(Color.mabeGray400.opacity(0.8))
+                    .offset(x: 18, y: -8)
+                Image(systemName: "sparkles")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(Color.mabeElectric.opacity(0.55))
+                    .offset(x: 50, y: 38)
             }
+            .frame(width: 140, height: 120)
 
             VStack(spacing: 6) {
-                Text("Sin solicitudes pendientes")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(Color.mabeGray900)
-                Text("Cuando registres un trámite, aparecerá aquí para que puedas darle seguimiento.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.mabeGray500)
+                Text("Aún no tienes solicitudes")
+                    .font(.mabeTitle)
+                    .foregroundStyle(Color.mabeGray600)
+                Text("Tus trámites aparecerán aquí")
+                    .font(.mabeSub)
+                    .foregroundStyle(Color.mabeGray400)
                     .multilineTextAlignment(.center)
             }
 
-            MabePrimaryButton(title: "Crear solicitud", icon: "plus") {}
+            Button("Crear mi primera solicitud") {}
+                .font(.mabeSub.weight(.semibold))
+                .foregroundStyle(Color.mabeBlue)
+                .frame(minHeight: 44)
         }
     }
 }

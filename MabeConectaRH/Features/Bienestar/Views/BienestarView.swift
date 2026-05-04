@@ -21,7 +21,7 @@ struct BienestarView: View {
                 .padding(.bottom, 24)
             }
         }
-        .background(Color.mabeGray100)
+        .background(Color.mabeBackground)
         .navigationTitle("Mi Bienestar")
         .mabeNavigationBarTitleDisplayMode(.large)
         .animation(.spring(response: 0.28), value: viewModel.estadoSeleccionado)
@@ -32,39 +32,49 @@ struct BienestarView: View {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Check-in emocional del día")
-                        .font(.title3.weight(.semibold))
+                        .font(.mabeHeadline)
                         .foregroundStyle(Color.mabeGray900)
                     Text("Selecciona cómo te sientes hoy.")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Color.mabeGray500)
+                        .font(.mabeSub)
+                        .foregroundStyle(Color.mabeGray400)
                 }
 
-                HStack {
+                HStack(spacing: 8) {
                     ForEach(EstadoBienestar.allCases) { estado in
+                        let visual = estado.visual
+                        let isSelected = viewModel.estadoSeleccionado == estado
+                        let hasSelection = viewModel.estadoSeleccionado != nil
                         Button {
                             viewModel.seleccionar(estado)
                         } label: {
                             VStack(spacing: 6) {
-                                Text(estado.emoji)
-                                    .font(.system(size: viewModel.estadoSeleccionado == estado ? 42 : 34))
-                                    .scaleEffect(viewModel.estadoSeleccionado == estado ? 1.12 : 1)
-                                Text(estado.rawValue)
-                                    .font(.caption.weight(.medium))
-                                    .foregroundStyle(Color.mabeGray500)
+                                ZStack {
+                                    Circle()
+                                        .fill(visual.color.opacity(isSelected ? 0.15 : 0))
+                                        .frame(width: 54, height: 54)
+                                    Text(visual.emoji)
+                                        .font(.system(size: 32))
+                                        .scaleEffect(isSelected ? 1.4 : (hasSelection ? 0.9 : 1))
+                                }
+                                Text(visual.label)
+                                    .font(.mabeLabel)
+                                    .foregroundStyle(isSelected ? visual.color : Color.mabeGray400)
+                                    .opacity(isSelected ? 1 : 0.75)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.75)
                             }
-                            .frame(maxWidth: .infinity, minHeight: 74)
+                            .frame(maxWidth: .infinity, minHeight: 84)
+                            .opacity(hasSelection && !isSelected ? 0.42 : 1)
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel(estado.rawValue)
+                        .accessibilityLabel(visual.label)
                     }
                 }
             }
             .padding(16)
             .background(
                 LinearGradient(
-                    colors: [Color.mabeInfo.opacity(0.12), Color.mabeBlue.opacity(0.05), .white],
+                    colors: [Color.mabeInfo.opacity(0.10), Color.mabeElectric.opacity(0.05), .white],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -73,22 +83,40 @@ struct BienestarView: View {
     }
 
     private var streakCard: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "flame.fill")
-                .font(.title2)
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-                .background(Color.white.opacity(0.18))
-                .clipShape(Circle())
-            Text("Llevas 5 días registrando tu bienestar 🔥")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(.white)
-            Spacer()
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 12) {
+                Text("🔥")
+                    .font(.title2)
+                    .frame(width: 44, height: 44)
+                    .background(Color.white.opacity(0.18))
+                    .clipShape(Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Llevas 5 días registrando")
+                        .font(.mabeSub.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text("Mantén tu racha de bienestar")
+                        .font(.mabeCaption)
+                        .foregroundStyle(.white.opacity(0.78))
+                }
+                Spacer()
+            }
+
+            HStack(spacing: 8) {
+                ForEach(0..<7) { index in
+                    Circle()
+                        .fill(Color.white.opacity(index < 5 ? 1 : 0.3))
+                        .frame(width: 16, height: 16)
+                }
+                Spacer()
+                Text("5 de 7 días")
+                    .font(.mabeCaption.weight(.semibold))
+                    .foregroundStyle(.white)
+            }
         }
-        .padding(16)
-        .background(Color.mabeBlue)
-        .clipShape(RoundedRectangle(cornerRadius: MabeTheme.cardRadius, style: .continuous))
-        .mabeCardShadow()
+        .padding(20)
+        .background(LinearGradient.mabeHero)
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .shadow(color: Color.mabeElectric.opacity(0.24), radius: 18, x: 0, y: 8)
     }
 
     private var supportCard: some View {
@@ -102,11 +130,11 @@ struct BienestarView: View {
                     .clipShape(Circle())
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Estamos contigo")
-                        .font(.headline.weight(.semibold))
+                        .font(.mabeTitle)
                         .foregroundStyle(Color.mabeDanger)
                     Text("Podemos canalizarte con un especialista de RH de forma confidencial.")
-                        .font(.subheadline)
-                        .foregroundStyle(Color.mabeGray500)
+                        .font(.mabeSub)
+                        .foregroundStyle(Color.mabeGray600)
                     Button("Hablar con alguien") {}
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white)
@@ -123,7 +151,7 @@ struct BienestarView: View {
     private var resourcesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Recursos")
-                .font(.title3.weight(.semibold))
+                .font(.mabeHeadline)
                 .foregroundStyle(Color.mabeGray900)
 
             ForEach(viewModel.recursos, id: \.self) { recurso in
@@ -136,7 +164,7 @@ struct BienestarView: View {
                             .background(Color.mabeBlue.opacity(0.1))
                             .clipShape(Circle())
                         Text(recurso)
-                            .font(.body.weight(.medium))
+                            .font(.mabeBody.weight(.medium))
                             .foregroundStyle(Color.mabeGray900)
                         Spacer()
                         Image(systemName: "chevron.right")
@@ -145,6 +173,23 @@ struct BienestarView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private extension EstadoBienestar {
+    var visual: (emoji: String, label: String, color: Color) {
+        switch self {
+        case .triste:
+            return ("😔", "Difícil", Color(hex: "#F03E3E"))
+        case .bajo:
+            return ("😕", "Cansado", Color(hex: "#FFB300"))
+        case .neutral:
+            return ("😐", "Regular", Color(hex: "#9AA5BE"))
+        case .bien:
+            return ("🙂", "Bien", Color(hex: "#00C27C"))
+        case .excelente:
+            return ("😊", "Excelente", Color(hex: "#1976FF"))
         }
     }
 }

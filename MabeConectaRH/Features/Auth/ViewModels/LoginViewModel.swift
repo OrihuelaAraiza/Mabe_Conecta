@@ -15,17 +15,21 @@ final class LoginViewModel {
     }
 
     @MainActor
-    func login() async -> Empleado? {
+    func login() async -> (Empleado, UserRole)? {
         guard canSubmit else { return nil }
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
 
         do {
-            return try await authService.login(numeroEmpleado: numeroEmpleado, nip: nip)
+            return try await authService.login(numero: numeroEmpleado, nip: nip)
         } catch {
             errorMessage = error.localizedDescription
             return nil
         }
+    }
+
+    func loginDemo() -> Empleado {
+        authService.loginDemo()
     }
 }

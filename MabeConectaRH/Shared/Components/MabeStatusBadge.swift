@@ -6,7 +6,7 @@ struct MabeStatusBadge: View {
 
     var body: some View {
         Text(status)
-            .font(.caption.weight(.semibold))
+            .font(.mabeLabel)
             .foregroundStyle(color)
             .padding(.horizontal, 10)
             .padding(.vertical, 4)

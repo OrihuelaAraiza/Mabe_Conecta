@@ -24,7 +24,7 @@ struct MabeTextField: View {
                     TextField(placeholder, text: $text)
                 }
             }
-            .font(.body)
+            .font(.mabeBody)
             .foregroundStyle(Color.mabeGray900)
             .mabeKeyboard(keyboardType)
             .autocorrectionDisabled()
@@ -36,8 +36,8 @@ struct MabeTextField: View {
                     isVisible.toggle()
                 } label: {
                     Image(systemName: isVisible ? "eye.slash" : "eye")
-                        .font(.body.weight(.medium))
-                        .foregroundStyle(Color.mabeGray500)
+                        .font(.mabeBody)
+                        .foregroundStyle(Color.mabeGray400)
                         .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
@@ -46,13 +46,15 @@ struct MabeTextField: View {
         }
         .padding(.leading, 14)
         .padding(.trailing, isSecure ? 4 : 14)
-        .frame(minHeight: 52)
-        .background(Color.mabeGray100)
+        .frame(minHeight: 48)
+        .background(Color.mabeSurface)
         .overlay {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(isFocused ? Color.mabeLightBlue : Color.mabeGray200, lineWidth: isFocused ? 2 : 1)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(isFocused ? Color.mabeElectric : Color.mabeGray200, lineWidth: isFocused ? 2 : 1)
+                .animation(.easeInOut(duration: 0.2), value: isFocused)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .shadow(color: Color.mabeGray900.opacity(isFocused ? 0.08 : 0.03), radius: isFocused ? 12 : 6, x: 0, y: 3)
     }
 }
 

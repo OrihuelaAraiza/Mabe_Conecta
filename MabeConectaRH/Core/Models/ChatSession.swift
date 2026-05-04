@@ -25,3 +25,17 @@ struct ChatSession: Identifiable, Hashable {
     let id = UUID()
     var mensajes: [ChatMessage]
 }
+
+enum ChatUrgencia: String, Hashable {
+    case alta = "Alta"
+    case normal = "Normal"
+}
+
+struct ChatEscalado: Identifiable, Hashable {
+    let id = UUID()
+    let empleadoNombre: String
+    let empleadoId: String
+    let ultimoMensaje: String
+    let fecha: Date
+    let urgencia: ChatUrgencia
+}
