@@ -1,0 +1,31 @@
+import Foundation
+import Observation
+
+@Observable
+final class LoginViewModel {
+    var numeroEmpleado = ""
+    var nip = ""
+    var isLoading = false
+    var errorMessage: String?
+
+    private let authService = AuthService()
+
+    var canSubmit: Bool {
+        !numeroEmpleado.isEmpty && !nip.isEmpty && !isLoading
+    }
+
+    @MainActor
+    func login() async -> Empleado? {
+        guard canSubmit else { return nil }
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            return try await authService.login(numeroEmpleado: numeroEmpleado, nip: nip)
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+}

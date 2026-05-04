@@ -1,0 +1,446 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B00000000000000000000001 /* MabeTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000001 /* MabeTheme.swift */; };
+		B00000000000000000000002 /* MabeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000002 /* MabeTextField.swift */; };
+		B00000000000000000000003 /* MabeLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000003 /* MabeLogoView.swift */; };
+		B00000000000000000000004 /* MabeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000004 /* MabeCard.swift */; };
+		B00000000000000000000005 /* MabePrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000005 /* MabePrimaryButton.swift */; };
+		B00000000000000000000006 /* SkeletonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000006 /* SkeletonView.swift */; };
+		B00000000000000000000007 /* MabeStatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000007 /* MabeStatusBadge.swift */; };
+		B00000000000000000000008 /* Date+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000008 /* Date+Display.swift */; };
+		B00000000000000000000009 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000009 /* Color+Hex.swift */; };
+		B0000000000000000000000A /* MabeConectaRHApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000A /* MabeConectaRHApp.swift */; };
+		B0000000000000000000000B /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000B /* AppRouter.swift */; };
+		B0000000000000000000000C /* MockDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000C /* MockDataService.swift */; };
+		B0000000000000000000000D /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000D /* AuthService.swift */; };
+		B0000000000000000000000E /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000E /* AIService.swift */; };
+		B0000000000000000000000F /* BienestarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000F /* BienestarView.swift */; };
+		B00000000000000000000010 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000010 /* LoginView.swift */; };
+		B00000000000000000000011 /* EstadoBienestar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000011 /* EstadoBienestar.swift */; };
+		B00000000000000000000012 /* Solicitud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000012 /* Solicitud.swift */; };
+		B00000000000000000000013 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000013 /* ChatSession.swift */; };
+		B00000000000000000000014 /* Empleado.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000014 /* Empleado.swift */; };
+		B00000000000000000000015 /* BienestarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000015 /* BienestarViewModel.swift */; };
+		B00000000000000000000016 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000016 /* LoginViewModel.swift */; };
+		B00000000000000000000017 /* SolicitudesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000017 /* SolicitudesView.swift */; };
+		B00000000000000000000018 /* VacacionesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000018 /* VacacionesView.swift */; };
+		B00000000000000000000019 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000019 /* ChatView.swift */; };
+		B0000000000000000000001A /* SolicitudesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000001A /* SolicitudesViewModel.swift */; };
+		B0000000000000000000001B /* VacacionesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000001B /* VacacionesViewModel.swift */; };
+		B0000000000000000000001C /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000001C /* ChatViewModel.swift */; };
+		B0000000000000000000001D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000001D /* HomeView.swift */; };
+		B0000000000000000000001E /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000001E /* HomeViewModel.swift */; };
+		B0000000000000000000001F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000001F /* Assets.xcassets */; };
+		B00000000000000000000020 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000021 /* Haptics.swift */; };
+		B00000000000000000000021 /* View+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000022 /* View+Navigation.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F00000000000000000000001 /* MabeTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Theme/MabeTheme.swift; sourceTree = "<group>"; };
+		F00000000000000000000002 /* MabeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Components/MabeTextField.swift; sourceTree = "<group>"; };
+		F00000000000000000000003 /* MabeLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Components/MabeLogoView.swift; sourceTree = "<group>"; };
+		F00000000000000000000004 /* MabeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Components/MabeCard.swift; sourceTree = "<group>"; };
+		F00000000000000000000005 /* MabePrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Components/MabePrimaryButton.swift; sourceTree = "<group>"; };
+		F00000000000000000000006 /* SkeletonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Components/SkeletonView.swift; sourceTree = "<group>"; };
+		F00000000000000000000007 /* MabeStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Components/MabeStatusBadge.swift; sourceTree = "<group>"; };
+		F00000000000000000000008 /* Date+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Extensions/Date+Display.swift; sourceTree = "<group>"; };
+		F00000000000000000000009 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Extensions/Color+Hex.swift; sourceTree = "<group>"; };
+		F0000000000000000000000A /* MabeConectaRHApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/MabeConectaRHApp.swift; sourceTree = "<group>"; };
+		F0000000000000000000000B /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/AppRouter.swift; sourceTree = "<group>"; };
+		F0000000000000000000000C /* MockDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Services/MockDataService.swift; sourceTree = "<group>"; };
+		F0000000000000000000000D /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Services/AuthService.swift; sourceTree = "<group>"; };
+		F0000000000000000000000E /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Services/AIService.swift; sourceTree = "<group>"; };
+		F0000000000000000000000F /* BienestarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Bienestar/Views/BienestarView.swift; sourceTree = "<group>"; };
+		F00000000000000000000010 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Auth/Views/LoginView.swift; sourceTree = "<group>"; };
+		F00000000000000000000011 /* EstadoBienestar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Models/EstadoBienestar.swift; sourceTree = "<group>"; };
+		F00000000000000000000012 /* Solicitud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Models/Solicitud.swift; sourceTree = "<group>"; };
+		F00000000000000000000013 /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Models/ChatSession.swift; sourceTree = "<group>"; };
+		F00000000000000000000014 /* Empleado.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Models/Empleado.swift; sourceTree = "<group>"; };
+		F00000000000000000000015 /* BienestarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Bienestar/ViewModels/BienestarViewModel.swift; sourceTree = "<group>"; };
+		F00000000000000000000016 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Auth/ViewModels/LoginViewModel.swift; sourceTree = "<group>"; };
+		F00000000000000000000017 /* SolicitudesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Solicitudes/Views/SolicitudesView.swift; sourceTree = "<group>"; };
+		F00000000000000000000018 /* VacacionesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Vacaciones/Views/VacacionesView.swift; sourceTree = "<group>"; };
+		F00000000000000000000019 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Chat/Views/ChatView.swift; sourceTree = "<group>"; };
+		F0000000000000000000001A /* SolicitudesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Solicitudes/ViewModels/SolicitudesViewModel.swift; sourceTree = "<group>"; };
+		F0000000000000000000001B /* VacacionesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Vacaciones/ViewModels/VacacionesViewModel.swift; sourceTree = "<group>"; };
+		F0000000000000000000001C /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Chat/ViewModels/ChatViewModel.swift; sourceTree = "<group>"; };
+		F0000000000000000000001D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Home/Views/HomeView.swift; sourceTree = "<group>"; };
+		F0000000000000000000001E /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Home/ViewModels/HomeViewModel.swift; sourceTree = "<group>"; };
+		F0000000000000000000001F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F00000000000000000000020 /* MabeConectaRH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MabeConectaRH.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00000000000000000000021 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Extensions/Haptics.swift; sourceTree = "<group>"; };
+		F00000000000000000000022 /* View+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/Extensions/View+Navigation.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CA0000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000002 /* MabeConectaRH */,
+				A10000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000000000000000000002 /* MabeConectaRH */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000000A /* MabeConectaRHApp.swift */,
+				F0000000000000000000000B /* AppRouter.swift */,
+				F00000000000000000000014 /* Empleado.swift */,
+				F00000000000000000000012 /* Solicitud.swift */,
+				F00000000000000000000013 /* ChatSession.swift */,
+				F00000000000000000000011 /* EstadoBienestar.swift */,
+				F0000000000000000000000C /* MockDataService.swift */,
+				F0000000000000000000000D /* AuthService.swift */,
+				F0000000000000000000000E /* AIService.swift */,
+				F00000000000000000000016 /* LoginViewModel.swift */,
+				F00000000000000000000010 /* LoginView.swift */,
+				F0000000000000000000001E /* HomeViewModel.swift */,
+				F0000000000000000000001D /* HomeView.swift */,
+				F0000000000000000000001C /* ChatViewModel.swift */,
+				F00000000000000000000019 /* ChatView.swift */,
+				F0000000000000000000001B /* VacacionesViewModel.swift */,
+				F00000000000000000000018 /* VacacionesView.swift */,
+				F0000000000000000000001A /* SolicitudesViewModel.swift */,
+				F00000000000000000000017 /* SolicitudesView.swift */,
+				F00000000000000000000015 /* BienestarViewModel.swift */,
+				F0000000000000000000000F /* BienestarView.swift */,
+				F00000000000000000000001 /* MabeTheme.swift */,
+				F00000000000000000000002 /* MabeTextField.swift */,
+				F00000000000000000000003 /* MabeLogoView.swift */,
+				F00000000000000000000004 /* MabeCard.swift */,
+				F00000000000000000000005 /* MabePrimaryButton.swift */,
+				F00000000000000000000006 /* SkeletonView.swift */,
+				F00000000000000000000007 /* MabeStatusBadge.swift */,
+				F00000000000000000000008 /* Date+Display.swift */,
+				F00000000000000000000009 /* Color+Hex.swift */,
+				F00000000000000000000021 /* Haptics.swift */,
+				F00000000000000000000022 /* View+Navigation.swift */,
+				F0000000000000000000001F /* Assets.xcassets */,
+			);
+			path = MabeConectaRH;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F00000000000000000000020 /* MabeConectaRH.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A20000000000000000000001 /* MabeConectaRH */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C00000000000000000000001 /* Build configuration list for PBXNativeTarget "MabeConectaRH" */;
+			buildPhases = (
+				A50000000000000000000001 /* Sources */,
+				CA0000000000000000000001 /* Frameworks */,
+				A40000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MabeConectaRH;
+			productName = MabeConectaRH;
+			productReference = F00000000000000000000020 /* MabeConectaRH.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A30000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A20000000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = C00000000000000000000002 /* Build configuration list for PBXProject "MabeConectaRH" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = es;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				es,
+				en,
+				Base,
+			);
+			mainGroup = A10000000000000000000001;
+			productRefGroup = A10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A20000000000000000000001 /* MabeConectaRH */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A40000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0000000000000000000001F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A50000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00000000000000000000001 /* MabeTheme.swift in Sources */,
+				B00000000000000000000002 /* MabeTextField.swift in Sources */,
+				B00000000000000000000003 /* MabeLogoView.swift in Sources */,
+				B00000000000000000000004 /* MabeCard.swift in Sources */,
+				B00000000000000000000005 /* MabePrimaryButton.swift in Sources */,
+				B00000000000000000000006 /* SkeletonView.swift in Sources */,
+				B00000000000000000000007 /* MabeStatusBadge.swift in Sources */,
+				B00000000000000000000008 /* Date+Display.swift in Sources */,
+				B00000000000000000000009 /* Color+Hex.swift in Sources */,
+				B0000000000000000000000A /* MabeConectaRHApp.swift in Sources */,
+				B0000000000000000000000B /* AppRouter.swift in Sources */,
+				B0000000000000000000000C /* MockDataService.swift in Sources */,
+				B0000000000000000000000D /* AuthService.swift in Sources */,
+				B0000000000000000000000E /* AIService.swift in Sources */,
+				B0000000000000000000000F /* BienestarView.swift in Sources */,
+				B00000000000000000000010 /* LoginView.swift in Sources */,
+				B00000000000000000000011 /* EstadoBienestar.swift in Sources */,
+				B00000000000000000000012 /* Solicitud.swift in Sources */,
+				B00000000000000000000013 /* ChatSession.swift in Sources */,
+				B00000000000000000000014 /* Empleado.swift in Sources */,
+				B00000000000000000000015 /* BienestarViewModel.swift in Sources */,
+				B00000000000000000000016 /* LoginViewModel.swift in Sources */,
+				B00000000000000000000017 /* SolicitudesView.swift in Sources */,
+				B00000000000000000000018 /* VacacionesView.swift in Sources */,
+				B00000000000000000000019 /* ChatView.swift in Sources */,
+				B0000000000000000000001A /* SolicitudesViewModel.swift in Sources */,
+				B0000000000000000000001B /* VacacionesViewModel.swift in Sources */,
+				B0000000000000000000001C /* ChatViewModel.swift in Sources */,
+				B0000000000000000000001D /* HomeView.swift in Sources */,
+				B0000000000000000000001E /* HomeViewModel.swift in Sources */,
+				B00000000000000000000020 /* Haptics.swift in Sources */,
+				B00000000000000000000021 /* View+Navigation.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D00000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D00000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D00000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Mabe Conecta RH";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mabe.hackathon.MabeConectaRH;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D00000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Mabe Conecta RH";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mabe.hackathon.MabeConectaRH;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C00000000000000000000001 /* Build configuration list for PBXNativeTarget "MabeConectaRH" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D00000000000000000000003 /* Debug */,
+				D00000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C00000000000000000000002 /* Build configuration list for PBXProject "MabeConectaRH" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D00000000000000000000001 /* Debug */,
+				D00000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A30000000000000000000001 /* Project object */;
+}
