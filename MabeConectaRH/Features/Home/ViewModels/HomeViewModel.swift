@@ -4,18 +4,19 @@ import Observation
 @Observable
 final class HomeViewModel {
     let empleado: Empleado
-    let accesos: [QuickAccessItem]
     let solicitudes: [Solicitud]
 
     init(empleado: Empleado) {
         self.empleado = empleado
         self.solicitudes = Array(MockDataService.solicitudesRecientes.prefix(3))
-        self.accesos = [
-            QuickAccessItem(titulo: "Chat RH", subtitulo: "Respuesta inmediata", icono: "bubble.left.and.bubble.right.fill", destination: .chat),
-            QuickAccessItem(titulo: "Vacaciones", subtitulo: "Saldo y solicitudes", icono: "calendar.badge.clock", destination: .vacaciones),
-            QuickAccessItem(titulo: "Solicitudes", subtitulo: "Trámites activos", icono: "doc.text.fill", destination: .solicitudes),
-            QuickAccessItem(titulo: "Bienestar", subtitulo: "Check-in diario", icono: "heart.fill", destination: .bienestar)
-        ]
+    }
+
+    func accesos(for preferences: UserPreferences) -> [QuickAccessItem] {
+        let active = Set(preferences.shortcutsActivos)
+        let ordered = preferences.shortcutsOrden + QuickAccessItem.defaultOrder.filter { !preferences.shortcutsOrden.contains($0) }
+        return ordered
+            .filter { active.contains($0) }
+            .compactMap(QuickAccessItem.item(for:))
     }
 }
 
@@ -24,6 +25,7 @@ enum HomeQuickAccessDestination: Hashable, Identifiable {
     case vacaciones
     case solicitudes
     case bienestar
+    case tramite(String)
 
     var id: Self { self }
 }
@@ -34,4 +36,31 @@ struct QuickAccessItem: Identifiable, Hashable {
     let subtitulo: String
     let icono: String
     let destination: HomeQuickAccessDestination
+
+    static let defaultOrder = ["chat", "vacaciones", "solicitudes", "bienestar", "constancias", "nomina", "permisos", "incapacidades", "historial"]
+
+    static func item(for id: String) -> QuickAccessItem? {
+        switch id {
+        case "chat":
+            QuickAccessItem(titulo: "Chat RH", subtitulo: "Respuesta inmediata", icono: "bubble.left.and.bubble.right.fill", destination: .chat)
+        case "vacaciones":
+            QuickAccessItem(titulo: "Vacaciones", subtitulo: "Saldo y solicitudes", icono: "calendar.badge.clock", destination: .vacaciones)
+        case "solicitudes":
+            QuickAccessItem(titulo: "Solicitudes", subtitulo: "Trámites activos", icono: "doc.text.fill", destination: .solicitudes)
+        case "bienestar":
+            QuickAccessItem(titulo: "Bienestar", subtitulo: "Check-in diario", icono: "heart.fill", destination: .bienestar)
+        case "constancias":
+            QuickAccessItem(titulo: "Constancias", subtitulo: "Laborales y fiscales", icono: "doc.badge.plus", destination: .tramite(id))
+        case "nomina":
+            QuickAccessItem(titulo: "Nómina", subtitulo: "Recibos y dudas", icono: "dollarsign.circle.fill", destination: .tramite(id))
+        case "permisos":
+            QuickAccessItem(titulo: "Permisos", subtitulo: "Solicitar ausencia", icono: "checklist.checked", destination: .tramite(id))
+        case "incapacidades":
+            QuickAccessItem(titulo: "Incapacidades", subtitulo: "Registro y seguimiento", icono: "cross.case.fill", destination: .tramite(id))
+        case "historial":
+            QuickAccessItem(titulo: "Historial", subtitulo: "Movimientos RH", icono: "chart.bar.doc.horizontal.fill", destination: .tramite(id))
+        default:
+            nil
+        }
+    }
 }

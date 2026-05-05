@@ -10,6 +10,7 @@
 		067D33826FFBEF38EBCF7DD4 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A475E6E59556DB972881D57 /* UserPreferences.swift */; };
 		0D31000E5827CC80394FB6D5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62A9132C4BFF68B5A1E20746 /* OnboardingView.swift */; };
 		1417D7C5E96FD1AE898B1487 /* MabeGlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82288BB8FBCE63BB5914A79 /* MabeGlassCard.swift */; };
+		18C8A6B7D4E9123A5B6C7D8E /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1E2D3C4A5F678901234567 /* HeroWidget.swift */; };
 		1C721CC5377DB6975D12011F /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4651E529C4B40E8344248F /* ChatView.swift */; };
 		26A5D144F64AE05968C522A5 /* MabeLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D08DF3A9FAA5D70D3D4B2DD /* MabeLogoView.swift */; };
 		28AFD9B5357E3198A582EC10 /* MiRHView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F4BE52E58F64D6F5B78A8B /* MiRHView.swift */; };
@@ -27,6 +28,7 @@
 		6991956B2123EB8A86DCE02B /* AnimatedCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC157ED629E6295D88FD7A6 /* AnimatedCounter.swift */; };
 		6B525CD565013CD08ABAA54B /* SolicitudesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B0460AED70CE6EF974D2D3 /* SolicitudesView.swift */; };
 		70F87F5F1877F4D7681C78E2 /* Solicitud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C706E1BB35E88A536BB9A0E /* Solicitud.swift */; };
+		7138E9A0B1C2D3E4F5061728 /* HeroFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90ABCDEF1234567890ABCDEF /* HeroFeature.swift */; };
 		71B235A026BF95FF1CCADBB9 /* SkeletonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1325CCED8AA4606F3DC045BF /* SkeletonView.swift */; };
 		733FF27E56B4228843B8A4C9 /* MabeChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E109F92AB0F65D13CCB7F3 /* MabeChip.swift */; };
 		78ABCEB15B685EEEEB27D47A /* VacacionesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54689FCE7731B4B0594E43D5 /* VacacionesViewModel.swift */; };
@@ -39,6 +41,7 @@
 		9996DE1B52C5449146AE42D3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4782F737137D445109C0B0B9 /* Foundation.framework */; };
 		A72CED86C197597A307148F6 /* MabeConectaRHApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE2BD85F25D73E4848C7EF8 /* MabeConectaRHApp.swift */; };
 		B25B50D1C84E8A2AFCB2EFC8 /* VacacionesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9EEECB5F1AFD4FED4469CC /* VacacionesView.swift */; };
+		B4C5D6E7F8091A2B3C4D5E6F /* PerfilEmpleadoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* PerfilEmpleadoView.swift */; };
 		B33093D2B44B49BDD547C3D2 /* BienestarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EEC7CAC9614517F5BC563E8 /* BienestarViewModel.swift */; };
 		C4346407745AA7286572854E /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4859B4E401F2D2F6641E08A /* HomeViewModel.swift */; };
 		C6CCD2A194A426566BEF5635 /* EstadoBienestar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9054CA25FF911C85CC92172 /* EstadoBienestar.swift */; };
@@ -74,13 +77,16 @@
 		7ADED2A204D5985897F0F26A /* MabeTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeTextField.swift; sourceTree = "<group>"; };
 		7DB7C1D22E8021BC5015BA4E /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		82B4AF0D58F6D7866D4BBD3F /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8B1E2D3C4A5F678901234567 /* HeroWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HeroWidget.swift; sourceTree = "<group>"; };
 		8D08DF3A9FAA5D70D3D4B2DD /* MabeLogoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeLogoView.swift; sourceTree = "<group>"; };
 		8D38F90820432E741DBDDF6A /* MabeTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeTheme.swift; sourceTree = "<group>"; };
 		8EEC7CAC9614517F5BC563E8 /* BienestarViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BienestarViewModel.swift; sourceTree = "<group>"; };
+		90ABCDEF1234567890ABCDEF /* HeroFeature.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HeroFeature.swift; sourceTree = "<group>"; };
 		98B0460AED70CE6EF974D2D3 /* SolicitudesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SolicitudesView.swift; sourceTree = "<group>"; };
 		9AA1BD7013D1B0172B59FB50 /* AIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		9EE2BD85F25D73E4848C7EF8 /* MabeConectaRHApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeConectaRHApp.swift; sourceTree = "<group>"; };
 		A03C6FFA84BB88EB88CA567A /* LoginView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* PerfilEmpleadoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PerfilEmpleadoView.swift; sourceTree = "<group>"; };
 		A61352FB52E7A81D468673A8 /* MabeCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeCard.swift; sourceTree = "<group>"; };
 		AF3230E9BE1AF1B7C8474D9D /* Date+Display.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Date+Display.swift"; sourceTree = "<group>"; };
 		B6F4BE52E58F64D6F5B78A8B /* MiRHView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MiRHView.swift; sourceTree = "<group>"; };
@@ -323,6 +329,7 @@
 				DC693467C778BD40BC7E700C /* ChatSession.swift */,
 				0E2CAF64F8C16A22F54AE0EE /* Empleado.swift */,
 				F9054CA25FF911C85CC92172 /* EstadoBienestar.swift */,
+				90ABCDEF1234567890ABCDEF /* HeroFeature.swift */,
 				6C706E1BB35E88A536BB9A0E /* Solicitud.swift */,
 				2A475E6E59556DB972881D57 /* UserPreferences.swift */,
 			);
@@ -362,6 +369,7 @@
 				858F564CF29E3B7E9DB1A8B1 /* Home */,
 				9FD4268FEB151D629188FFE6 /* MiRH */,
 				DFF98E8FC8CF22765918EC43 /* Onboarding */,
+				ABCD1234EF567890ABCDEF12 /* Perfil */,
 				86ECC960F67DC80B080AC19C /* Solicitudes */,
 				43ACE3787A09FE04AC06B294 /* Vacaciones */,
 			);
@@ -412,7 +420,16 @@
 		E30BB6A3F063DC60B0F37C6B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8B1E2D3C4A5F678901234567 /* HeroWidget.swift */,
 				7DB7C1D22E8021BC5015BA4E /* HomeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E4F5A6B7C8D90123456789AB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F60718293A4B5C /* PerfilEmpleadoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -439,6 +456,14 @@
 				A03C6FFA84BB88EB88CA567A /* LoginView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		ABCD1234EF567890ABCDEF12 /* Perfil */ = {
+			isa = PBXGroup;
+			children = (
+				E4F5A6B7C8D90123456789AB /* Views */,
+			);
+			path = Perfil;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -517,6 +542,7 @@
 				D464F41765467B7E33B905F7 /* ChatSession.swift in Sources */,
 				36EBABC524271047AE3D97D3 /* Empleado.swift in Sources */,
 				C6CCD2A194A426566BEF5635 /* EstadoBienestar.swift in Sources */,
+				7138E9A0B1C2D3E4F5061728 /* HeroFeature.swift in Sources */,
 				70F87F5F1877F4D7681C78E2 /* Solicitud.swift in Sources */,
 				067D33826FFBEF38EBCF7DD4 /* UserPreferences.swift in Sources */,
 				511422146488AC58BB227C27 /* AIService.swift in Sources */,
@@ -529,9 +555,11 @@
 				EF5367080CB988CCD86C1077 /* ChatViewModel.swift in Sources */,
 				1C721CC5377DB6975D12011F /* ChatView.swift in Sources */,
 				C4346407745AA7286572854E /* HomeViewModel.swift in Sources */,
+				18C8A6B7D4E9123A5B6C7D8E /* HeroWidget.swift in Sources */,
 				D938BEE4A01FACB3FCA6D006 /* HomeView.swift in Sources */,
 				28AFD9B5357E3198A582EC10 /* MiRHView.swift in Sources */,
 				0D31000E5827CC80394FB6D5 /* OnboardingView.swift in Sources */,
+				B4C5D6E7F8091A2B3C4D5E6F /* PerfilEmpleadoView.swift in Sources */,
 				3A115B748108807AD2FCCC25 /* SolicitudesViewModel.swift in Sources */,
 				6B525CD565013CD08ABAA54B /* SolicitudesView.swift in Sources */,
 				78ABCEB15B685EEEEB27D47A /* VacacionesViewModel.swift in Sources */,

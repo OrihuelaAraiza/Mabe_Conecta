@@ -225,6 +225,9 @@ struct OnboardingView: View {
                 if !preferences.widgetsActivos.contains(id) {
                     preferences.widgetsActivos.append(id)
                 }
+                if !preferences.widgetsOrden.contains(id) {
+                    preferences.widgetsOrden.append(id)
+                }
             } else {
                 preferences.widgetsActivos.removeAll { $0 == id }
             }
@@ -232,6 +235,10 @@ struct OnboardingView: View {
     }
 
     private func complete(notifications: Bool) {
+        let shortcuts = UserPreferences.defaultShortcuts(for: preferences.interesesSeleccionados)
+        preferences.shortcutsActivos = shortcuts
+        preferences.shortcutsOrden = shortcuts
+        preferences.widgetsOrden = widgets.map(\.id).filter { preferences.widgetsActivos.contains($0) } + widgets.map(\.id).filter { !preferences.widgetsActivos.contains($0) }
         preferences.notificacionesActivas = notifications
         preferences.onboardingCompletado = true
         preferencesStore.save(preferences)

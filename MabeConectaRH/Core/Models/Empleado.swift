@@ -17,6 +17,6 @@ struct Empleado: Identifiable, Hashable {
     var iniciales: String {
         let primera = nombre.first.map(String.init) ?? ""
         let segunda = apellidos.first.map(String.init) ?? ""
-        return "\(primera)\(segunda)"
+        return "\(primera)\(segunda)".uppercased()
     }
 }
