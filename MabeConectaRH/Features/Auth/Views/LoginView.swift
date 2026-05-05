@@ -5,6 +5,7 @@ struct LoginView: View {
     @Environment(UserPreferencesStore.self) private var preferencesStore
     @State private var viewModel = LoginViewModel()
     @State private var didAppear = false
+    @State private var isRHMode = false
 
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -53,8 +54,26 @@ struct LoginView: View {
                             placeholder: "Número de empleado",
                             text: $viewModel.numeroEmpleado,
                             keyboardType: .numberPad,
-                            submitLabel: .next
+                            submitLabel: .next,
+                            highlightColor: isRHMode ? Color(hex: "#D97706") : nil
                         )
+
+                        if isRHMode {
+                            HStack(spacing: 6) {
+                                Image(systemName: "shield.checkered")
+                                    .font(.system(size: 11, weight: .semibold))
+                                Text("Acceso Administrador RH")
+                                    .font(.system(size: 12, weight: .semibold))
+                            }
+                            .foregroundColor(Color(hex: "#D97706"))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(hex: "#D97706").opacity(0.1))
+                            .clipShape(Capsule())
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .transition(.scale(scale: 0.8).combined(with: .opacity))
+                        }
+
                         MabeTextField(
                             placeholder: "NIP",
                             text: $viewModel.nip,
@@ -131,6 +150,10 @@ struct LoginView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.errorMessage)
+        .animation(.easeInOut(duration: 0.3), value: isRHMode)
+        .onChange(of: viewModel.numeroEmpleado) { _, value in
+            isRHMode = value == "99001"
+        }
         .preferredColorScheme(.light)
         .onAppear {
             withAnimation(.spring(response: 0.55, dampingFraction: 0.86)) {

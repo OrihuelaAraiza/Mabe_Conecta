@@ -35,13 +35,33 @@ final class AppState {
         return hasCompletedOnboarding ? .main : .onboarding
     }
 
+    init() {
+        hasCompletedOnboarding = Self.loadOnboardingState()
+        restoreSession()
+    }
+
+    func restoreSession() {
+        guard let session = SessionService.load() else { return }
+
+        if session.empleadoId == "99001" || session.rol == "rh" {
+            currentUser = MockDataService.agenteRH
+            userRole = .agenteRH
+        } else {
+            currentUser = MockDataService.empleadoActual
+            userRole = .empleado
+        }
+        isDemoMode = session.isDemoMode
+    }
+
     func signIn(user: Empleado, role: UserRole, isDemo: Bool) {
         currentUser = user
         userRole = role
         isDemoMode = isDemo
+        SessionService.save(empleadoId: user.id, rol: role, isDemoMode: isDemo)
     }
 
     func signOut() {
+        SessionService.clear()
         currentUser = nil
         userRole = .empleado
         isDemoMode = false
@@ -65,6 +85,16 @@ final class AppState {
 
     func toggleDemoRole() {
         userRole = userRole == .empleado ? .agenteRH : .empleado
+        if let currentUser {
+            SessionService.save(empleadoId: currentUser.id, rol: userRole, isDemoMode: isDemoMode)
+        }
         showToast("👤 Rol: \(userRole.displayName)")
+    }
+
+    private static func loadOnboardingState() -> Bool {
+        guard let data = UserDefaults.standard.data(forKey: "mabe.userPreferences"),
+              let preferences = try? JSONDecoder().decode(UserPreferences.self, from: data)
+        else { return false }
+        return preferences.onboardingCompletado
     }
 }

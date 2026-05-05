@@ -2,14 +2,50 @@ import SwiftUI
 
 struct SolicitudesView: View {
     @State private var viewModel = SolicitudesViewModel()
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color(hex: "#003087"))
+                        .frame(width: 34, height: 34)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Regresar")
+
+                Text("Mis Solicitudes")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(Color(hex: "#0D1B3E"))
+                Spacer()
+                Button {
+                    Haptics.impact(.light)
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color(hex: "#003087"))
+                }
+                .accessibilityLabel("Filtrar solicitudes")
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
+            .background(Color(hex: "#F8F9FC"))
+
+            Divider().opacity(0.3)
+
             segmentedControl
                 .padding(.horizontal, MabeTheme.horizontalPadding)
                 .padding(.top, 12)
+                .padding(.bottom, 16)
 
             if viewModel.filtradas.isEmpty {
                 EmptyRequestsView()
@@ -28,8 +64,7 @@ struct SolicitudesView: View {
             }
         }
         .background(Color.mabeBackground)
-        .navigationTitle("Mis Solicitudes")
-        .mabeNavigationBarTitleDisplayMode(.large)
+        .navigationBarHidden(true)
     }
 
     private var segmentedControl: some View {

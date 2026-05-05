@@ -11,6 +11,7 @@ struct MabeTextField: View {
     var isSecure = false
     var keyboardType: MabeKeyboardType = .default
     var submitLabel: SubmitLabel = .done
+    var highlightColor: Color?
 
     @FocusState private var isFocused: Bool
     @State private var isVisible = false
@@ -50,8 +51,9 @@ struct MabeTextField: View {
         .background(Color.mabeSurface)
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(isFocused ? Color.mabeElectric : Color.mabeGray200, lineWidth: isFocused ? 2 : 1)
+                .stroke(highlightColor ?? (isFocused ? Color.mabeElectric : Color.mabeGray200), lineWidth: highlightColor == nil ? (isFocused ? 2 : 1) : 2)
                 .animation(.easeInOut(duration: 0.2), value: isFocused)
+                .animation(.easeInOut(duration: 0.2), value: highlightColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .shadow(color: Color.mabeGray900.opacity(isFocused ? 0.08 : 0.03), radius: isFocused ? 12 : 6, x: 0, y: 3)

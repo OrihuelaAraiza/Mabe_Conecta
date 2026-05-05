@@ -1,0 +1,588 @@
+import SwiftUI
+
+struct CuponesView: View {
+    @State private var selectedCategory: CuponCategory = .todos
+    @State private var redeemedCoupons: Set<String> = []
+    @State private var showingRedeemSheet = false
+    @State private var selectedCoupon: Cupon?
+    @State private var confettiCounter = 0
+    @Environment(\.dismiss) private var dismiss
+
+    private var cuponesFiltrados: [Cupon] {
+        selectedCategory == .todos
+            ? MockDataService.cupones
+            : MockDataService.cupones.filter { $0.categoria == selectedCategory }
+    }
+
+    var body: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                header
+                categoryScroller
+
+                Divider().opacity(0.3)
+
+                ScrollView {
+                    LazyVGrid(
+                        columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                        spacing: 12
+                    ) {
+                        ForEach(cuponesFiltrados) { cupon in
+                            PhysicalCouponCard(
+                                cupon: cupon,
+                                isRedeemed: redeemedCoupons.contains(cupon.id),
+                                onTap: {
+                                    selectedCoupon = cupon
+                                    showingRedeemSheet = true
+                                }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                    .padding(.bottom, 100)
+                }
+            }
+
+            if confettiCounter > 0 {
+                ConfettiBurst(trigger: confettiCounter)
+                    .allowsHitTesting(false)
+            }
+        }
+        .navigationBarHidden(true)
+        .background(Color(hex: "#F8F9FC"))
+        .sheet(isPresented: $showingRedeemSheet) {
+            if let selectedCoupon {
+                CuponDetailSheet(
+                    cupon: selectedCoupon,
+                    isRedeemed: redeemedCoupons.contains(selectedCoupon.id),
+                    onRedeem: {
+                        redeemedCoupons.insert(selectedCoupon.id)
+                        showingRedeemSheet = false
+                        confettiCounter += 1
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    }
+                )
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(24)
+            }
+        }
+    }
+
+    private var header: some View {
+        HStack(spacing: 10) {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(Color(hex: "#003087"))
+                    .frame(width: 34, height: 34)
+                    .background(Color.white)
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Regresar")
+
+            Text("Mis Cupones")
+                .font(.system(size: 22, weight: .bold))
+                .foregroundColor(Color(hex: "#0D1B3E"))
+            Spacer()
+            HStack(spacing: 4) {
+                Image(systemName: "star.fill")
+                    .font(.system(size: 12))
+                    .foregroundColor(Color(hex: "#D97706"))
+                Text("320 pts")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(Color(hex: "#D97706"))
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Color(hex: "#D97706").opacity(0.1))
+            .clipShape(Capsule())
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+        .background(Color(hex: "#F8F9FC"))
+    }
+
+    private var categoryScroller: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(CuponCategory.allCases, id: \.self) { category in
+                    CategoryChip(
+                        title: category.label,
+                        icon: category.icon,
+                        isSelected: selectedCategory == category,
+                        action: {
+                            withAnimation(.spring(response: 0.3)) {
+                                selectedCategory = category
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 4)
+        }
+        .padding(.bottom, 8)
+    }
+}
+
+private struct CategoryChip: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .semibold))
+                Text(title)
+                    .font(.system(size: 13, weight: .semibold))
+            }
+            .foregroundColor(isSelected ? .white : Color(hex: "#4B5675"))
+            .padding(.horizontal, 12)
+            .frame(height: 34)
+            .background(isSelected ? Color(hex: "#003087") : Color.white)
+            .clipShape(Capsule())
+            .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 8, x: 0, y: 2)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct CuponCard: View {
+    let cupon: Cupon
+    let isRedeemed: Bool
+    let onTap: () -> Void
+    @State private var pressed = false
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 0) {
+                ZStack(alignment: .topTrailing) {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(cupon.gradient)
+                        .frame(height: 90)
+                        .overlay(alignment: .bottomTrailing) {
+                            Image(systemName: cupon.icon)
+                                .font(.system(size: 32))
+                                .foregroundColor(.white.opacity(0.25))
+                                .offset(x: 16, y: 16)
+                        }
+
+                    Text(cupon.categoria.label)
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(.white.opacity(0.25))
+                        .clipShape(Capsule())
+                        .padding(8)
+
+                    if isRedeemed {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color.black.opacity(0.45))
+                            .frame(height: 90)
+                            .overlay {
+                                VStack(spacing: 4) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 22))
+                                        .foregroundColor(.white)
+                                    Text("Canjeado")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(cupon.titulo)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(Color(hex: "#0D1B3E"))
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(cupon.empresa)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Color(hex: "#9AA5BE"))
+
+                    Spacer().frame(height: 6)
+
+                    HStack(spacing: 0) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(Color(hex: "#D97706"))
+                            Text("\(cupon.puntosCosto)")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(Color(hex: "#D97706"))
+                        }
+
+                        Spacer()
+
+                        Text("Vence \(cupon.vencimiento)")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundColor(Color(hex: "#9AA5BE"))
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 10)
+            }
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: Color(hex: "#0D1B3E").opacity(isRedeemed ? 0.03 : 0.07), radius: 10, x: 0, y: 3)
+            .opacity(isRedeemed ? 0.65 : 1.0)
+            .scaleEffect(pressed ? 0.97 : 1.0)
+        }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
+                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
+        )
+        .animation(.spring(response: 0.3), value: isRedeemed)
+    }
+}
+
+private struct PhysicalCouponCard: View {
+    let cupon: Cupon
+    let isRedeemed: Bool
+    let onTap: () -> Void
+
+    @State private var shimmerPhase: CGFloat = -1
+    @State private var pressed = false
+
+    var body: some View {
+        Button(action: onTap) {
+            ZStack {
+                VStack(spacing: 0) {
+                    ZStack(alignment: .topLeading) {
+                        cupon.gradient
+                            .frame(height: 100)
+
+                        HStack(spacing: 6) {
+                            ForEach(0..<8, id: \.self) { _ in
+                                VStack(spacing: 6) {
+                                    ForEach(0..<5, id: \.self) { _ in
+                                        Circle()
+                                            .fill(.white.opacity(0.08))
+                                            .frame(width: 3, height: 3)
+                                    }
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+                        .padding(.trailing, 8)
+
+                        Image(systemName: cupon.icon)
+                            .font(.system(size: 50))
+                            .foregroundColor(.white.opacity(0.15))
+                            .offset(x: 100, y: 20)
+
+                        HStack(spacing: 4) {
+                            Image(systemName: cupon.icon)
+                                .font(.system(size: 10, weight: .bold))
+                            Text(cupon.empresa)
+                                .font(.system(size: 10, weight: .bold))
+                                .lineLimit(1)
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.white.opacity(0.2))
+                        .clipShape(Capsule())
+                        .padding(10)
+
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: shimmerPhase - 0.2),
+                                .init(color: .white.opacity(0.12), location: shimmerPhase),
+                                .init(color: .clear, location: shimmerPhase + 0.2)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .onAppear {
+                            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false).delay(Double.random(in: 0...2))) {
+                                shimmerPhase = 1.5
+                            }
+                        }
+                    }
+                    .frame(height: 100)
+
+                    DashedDivider()
+                        .stroke(style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                        .foregroundColor(Color(hex: "#DDE3F0"))
+                        .frame(height: 1)
+                        .overlay(alignment: .leading) {
+                            Circle()
+                                .fill(Color(hex: "#F8F9FC"))
+                                .frame(width: 16, height: 16)
+                                .offset(x: -8)
+                        }
+                        .overlay(alignment: .trailing) {
+                            Circle()
+                                .fill(Color(hex: "#F8F9FC"))
+                                .frame(width: 16, height: 16)
+                                .offset(x: 8)
+                        }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(cupon.titulo)
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(Color(hex: "#0D1B3E"))
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        HStack {
+                            HStack(spacing: 3) {
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 9))
+                                    .foregroundColor(Color(hex: "#D97706"))
+                                Text("\(cupon.puntosCosto) pts")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundColor(Color(hex: "#D97706"))
+                            }
+                            Spacer()
+                            Text("vence \(cupon.vencimiento)")
+                                .font(.system(size: 10))
+                                .foregroundColor(Color(hex: "#9AA5BE"))
+                        }
+
+                        BarcodeStripes()
+                            .frame(height: 20)
+                            .opacity(0.25)
+                    }
+                    .padding(10)
+                    .background(Color.white)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .shadow(color: Color(hex: "#0D1B3E").opacity(0.08), radius: 12, x: 0, y: 4)
+
+                if isRedeemed {
+                    ZStack {
+                        Color.black.opacity(0.35)
+                        Text("CANJEADO")
+                            .font(.system(size: 18, weight: .black))
+                            .foregroundColor(.white.opacity(0.9))
+                            .rotationEffect(.degrees(-25))
+                            .overlay {
+                                Text("CANJEADO")
+                                    .font(.system(size: 18, weight: .black))
+                                    .foregroundColor(Color(hex: "#F03E3E").opacity(0.6))
+                                    .rotationEffect(.degrees(-25))
+                                    .offset(x: 1, y: 1)
+                            }
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+            }
+            .scaleEffect(pressed ? 0.96 : 1.0)
+        }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
+                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
+        )
+    }
+}
+
+private struct DashedDivider: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: 0, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.width, y: rect.midY))
+        return path
+    }
+}
+
+private struct BarcodeStripes: View {
+    private let pattern: [CGFloat] = [2, 1, 3, 1, 2, 2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2, 1, 3, 1, 2, 2, 1, 3]
+
+    var body: some View {
+        HStack(spacing: 1) {
+            ForEach(pattern.indices, id: \.self) { index in
+                Rectangle()
+                    .fill(Color(hex: "#0D1B3E"))
+                    .frame(width: pattern[index])
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+private struct CuponDetailSheet: View {
+    let cupon: Cupon
+    let isRedeemed: Bool
+    let onRedeem: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var showingCode = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack(alignment: .bottomLeading) {
+                Rectangle()
+                    .fill(cupon.gradient)
+                    .frame(height: 160)
+
+                Image(systemName: cupon.icon)
+                    .font(.system(size: 60))
+                    .foregroundColor(.white.opacity(0.15))
+                    .offset(x: 200, y: 20)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(cupon.empresa)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.white.opacity(0.75))
+                    Text(cupon.titulo)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
+                }
+                .padding(20)
+            }
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text(cupon.descripcion)
+                        .font(.system(size: 15))
+                        .foregroundColor(Color(hex: "#4B5675"))
+                        .padding(.horizontal, 20)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Condiciones")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(Color(hex: "#0D1B3E"))
+                        ForEach(cupon.terminos, id: \.self) { termino in
+                            HStack(alignment: .top, spacing: 8) {
+                                Circle()
+                                    .fill(Color(hex: "#9AA5BE"))
+                                    .frame(width: 5, height: 5)
+                                    .padding(.top, 6)
+                                Text(termino)
+                                    .font(.system(size: 13))
+                                    .foregroundColor(Color(hex: "#6B7280"))
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+
+                    if showingCode {
+                        VStack(spacing: 12) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(Color.white)
+                                    .frame(width: 160, height: 160)
+                                    .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
+                                Image(systemName: "qrcode")
+                                    .font(.system(size: 100))
+                                    .foregroundColor(Color(hex: "#0D1B3E"))
+                            }
+
+                            Text(cupon.codigoPromo)
+                                .font(.system(size: 22, weight: .bold, design: .monospaced))
+                                .foregroundColor(Color(hex: "#003087"))
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(Color(hex: "#EFF3FA"))
+                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                            Text("Muestra este código al momento del pago")
+                                .font(.system(size: 12))
+                                .foregroundColor(Color(hex: "#9AA5BE"))
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .transition(.scale(scale: 0.8).combined(with: .opacity))
+                    }
+                }
+                .padding(.vertical, 20)
+            }
+
+            Spacer()
+            footerButton
+                .padding(.horizontal, 20)
+                .padding(.bottom, 32)
+        }
+        .buttonStyle(.plain)
+        .ignoresSafeArea(edges: .top)
+    }
+
+    @ViewBuilder
+    private var footerButton: some View {
+        if isRedeemed && showingCode {
+            Button("Cerrar") { dismiss() }
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(Color(hex: "#4B5675"))
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
+                .background(Color(hex: "#EFF3FA"))
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        } else if isRedeemed {
+            Button {
+                withAnimation(.spring(response: 0.4)) { showingCode = true }
+            } label: {
+                Label("Ver mi código", systemImage: "qrcode")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 54)
+                    .background(LinearGradient.mabeHero)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+        } else {
+            Button {
+                onRedeem()
+                withAnimation(.spring(response: 0.4).delay(0.3)) { showingCode = true }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 14))
+                    Text("Canjear por \(cupon.puntosCosto) puntos")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
+                .background(LinearGradient.mabeHero)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .shadow(color: Color(hex: "#1976FF").opacity(0.35), radius: 12, x: 0, y: 6)
+            }
+        }
+    }
+}
+
+private struct ConfettiBurst: View {
+    let trigger: Int
+    @State private var burst = false
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<40, id: \.self) { index in
+                Circle()
+                    .fill([Color(hex: "#003087"), Color(hex: "#7C5CFC"), Color(hex: "#00C27C"), .white][index % 4])
+                    .frame(width: CGFloat(5 + index % 4), height: CGFloat(5 + index % 4))
+                    .offset(
+                        x: burst ? CGFloat((index % 9) - 4) * 28 : 0,
+                        y: burst ? -CGFloat(80 + (index % 8) * 24) : 0
+                    )
+                    .opacity(burst ? 0 : 1)
+                    .animation(.easeOut(duration: 1.1).delay(Double(index) * 0.015), value: burst)
+            }
+        }
+        .onAppear { burst = true }
+        .onChange(of: trigger) { _, _ in
+            burst = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                burst = true
+            }
+        }
+    }
+}

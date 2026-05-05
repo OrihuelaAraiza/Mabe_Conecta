@@ -5,8 +5,8 @@ struct UserPreferences: Codable, Equatable {
     var interesesSeleccionados: [String] = []
     var widgetsActivos: [String] = ["vacaciones", "solicitudes", "bienestar", "accesos"]
     var widgetsOrden: [String] = ["vacaciones", "accesos", "bienestar", "solicitudes"]
-    var shortcutsActivos: [String] = ["chat", "vacaciones", "solicitudes", "bienestar"]
-    var shortcutsOrden: [String] = ["chat", "vacaciones", "solicitudes", "bienestar"]
+    var shortcutsActivos: [String] = ["chat", "benefits", "vacaciones", "solicitudes", "bienestar"]
+    var shortcutsOrden: [String] = ["chat", "benefits", "vacaciones", "solicitudes", "bienestar"]
     var notificacionesActivas: Bool = true
     var onboardingCompletado: Bool = false
 
@@ -35,7 +35,7 @@ struct UserPreferences: Codable, Equatable {
             }
         }
 
-        var result = ["chat"]
+        var result = ["chat", "benefits"]
         for item in mapped where !result.contains(item) {
             result.append(item)
         }
@@ -89,7 +89,7 @@ final class UserPreferencesStore {
     }
 
     func orderedShortcuts() -> [String] {
-        let known = ["chat", "vacaciones", "solicitudes", "bienestar", "constancias", "nomina", "permisos", "incapacidades", "historial"]
+        let known = ["chat", "benefits", "vacaciones", "solicitudes", "bienestar", "constancias", "nomina", "permisos", "incapacidades", "historial"]
         let ordered = preferences.shortcutsOrden.filter { known.contains($0) }
         return ordered + known.filter { !ordered.contains($0) }
     }

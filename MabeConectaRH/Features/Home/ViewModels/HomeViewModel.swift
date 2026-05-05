@@ -22,6 +22,7 @@ final class HomeViewModel {
 
 enum HomeQuickAccessDestination: Hashable, Identifiable {
     case chat
+    case benefits
     case vacaciones
     case solicitudes
     case bienestar
@@ -37,12 +38,14 @@ struct QuickAccessItem: Identifiable, Hashable {
     let icono: String
     let destination: HomeQuickAccessDestination
 
-    static let defaultOrder = ["chat", "vacaciones", "solicitudes", "bienestar", "constancias", "nomina", "permisos", "incapacidades", "historial"]
+    static let defaultOrder = ["chat", "benefits", "vacaciones", "solicitudes", "bienestar", "constancias", "nomina", "permisos", "incapacidades", "historial"]
 
     static func item(for id: String) -> QuickAccessItem? {
         switch id {
         case "chat":
             QuickAccessItem(titulo: "Chat RH", subtitulo: "Respuesta inmediata", icono: "bubble.left.and.bubble.right.fill", destination: .chat)
+        case "benefits":
+            QuickAccessItem(titulo: "Beneficios", subtitulo: "Cupones y apoyos", icono: "ticket.fill", destination: .benefits)
         case "vacaciones":
             QuickAccessItem(titulo: "Vacaciones", subtitulo: "Saldo y solicitudes", icono: "calendar.badge.clock", destination: .vacaciones)
         case "solicitudes":

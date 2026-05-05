@@ -3,6 +3,7 @@ import SwiftUI
 struct ChatView: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = ChatViewModel()
+    @State private var showSupport = false
 
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -33,6 +34,7 @@ struct ChatView: View {
                             .padding(.vertical, 16)
                         }
                         .background(Color.mabeBackground)
+                        .scrollDismissesKeyboard(.interactively)
                         .onChange(of: viewModel.mensajes.count) {
                             scrollToBottom(proxy)
                         }
@@ -63,7 +65,11 @@ struct ChatView: View {
                     }
                     .padding(.horizontal, MabeTheme.horizontalPadding)
                     .padding(.vertical, 12)
-                    .background(.ultraThinMaterial)
+                    .padding(.bottom, 88)
+                    .background {
+                        Color.mabeBackground
+                            .ignoresSafeArea(edges: .bottom)
+                    }
                     .overlay(alignment: .top) {
                         Rectangle()
                             .fill(Color.mabeGray200)
@@ -74,6 +80,9 @@ struct ChatView: View {
         }
         .mabeNavigationBarTitleDisplayMode(.inline)
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .sheet(isPresented: $showSupport) {
+            HRSupportSheet(context: "Solicitud desde asistente RH")
+        }
     }
 
     private var chatHeader: some View {
@@ -83,13 +92,24 @@ struct ChatView: View {
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Color.mabeGray900)
                 HStack(spacing: 6) {
-                    PulsingDot()
+                    ChatPulsingDot()
                     Text("Siempre disponible")
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(Color.mabeGray500)
                 }
             }
             Spacer()
+            Button {
+                showSupport = true
+            } label: {
+                Image(systemName: "person.2.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.mabeBlue)
+                    .frame(width: 36, height: 36)
+                    .background(Color.mabeBlue.opacity(0.1))
+                    .clipShape(Circle())
+            }
+            .accessibilityLabel("Hablar con RH")
         }
         .padding(.horizontal, MabeTheme.horizontalPadding)
         .padding(.vertical, 12)
@@ -292,7 +312,7 @@ private struct PulseDelay: ViewModifier {
     }
 }
 
-private struct PulsingDot: View {
+private struct ChatPulsingDot: View {
     @State private var scale = 0.8
 
     var body: some View {

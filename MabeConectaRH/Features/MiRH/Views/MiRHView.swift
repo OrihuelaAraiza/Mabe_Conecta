@@ -25,6 +25,14 @@ struct MiRHView: View {
                     }
                 }
 
+                menuSection("BENEFICIOS") {
+                    NavigationLink {
+                        CuponesView()
+                    } label: {
+                        MenuRow(icon: "ticket.fill", title: "Mis Cupones", color: Color(hex: "#7C5CFC"))
+                    }
+                }
+
                 menuSection("BIENESTAR") {
                     NavigationLink {
                         BienestarView()

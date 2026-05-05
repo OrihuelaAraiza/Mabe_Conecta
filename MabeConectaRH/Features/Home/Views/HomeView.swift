@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var viewModel: HomeViewModel
     @State private var selectedDestination: HomeQuickAccessDestination?
     @State private var isCustomizingHome = false
+    @State private var showWellbeingCheckIn = false
     let selectTab: (MainTab) -> Void
 
     init(empleado: Empleado, selectTab: @escaping (MainTab) -> Void = { _ in }) {
@@ -14,43 +15,38 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HeroWidget(empleado: viewModel.empleado, preferencias: preferencesStore.preferences)
-                    .padding(.top, 8)
-
-                if appState.userRole == .agenteRH {
-                    rhPanelCard
-                }
-
-                ForEach(preferencesStore.orderedWidgets(), id: \.self) { widget in
-                    if preferencesStore.isWidgetActive(widget) {
-                        homeWidget(widget)
-                    }
+        Group {
+            if appState.userRole == .agenteRH {
+                RHDashboardView(empleado: viewModel.empleado)
+            } else {
+                ScrollView {
+                    compactHomeContent
                 }
             }
-            .padding(.horizontal, MabeTheme.horizontalPadding)
-            .padding(.bottom, 28)
         }
         .refreshable {}
         .tint(.mabeBlue)
         .background(Color.mabeBackground)
-        .mabeNavigationBarTitleDisplayMode(.large)
+        .navigationBarHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isCustomizingHome = true
-                } label: {
-                    Image(systemName: "slider.horizontal.3")
-                        .font(.system(size: 16, weight: .semibold))
+                if appState.userRole != .agenteRH {
+                    Button {
+                        isCustomizingHome = true
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                    .accessibilityLabel("Personalizar inicio")
                 }
-                .accessibilityLabel("Personalizar inicio")
             }
         }
         .navigationDestination(item: $selectedDestination) { destination in
             switch destination {
             case .chat:
                 ChatView()
+            case .benefits:
+                BenefitsView()
             case .vacaciones:
                 VacacionesView(empleado: viewModel.empleado)
             case .solicitudes:
@@ -66,13 +62,100 @@ struct HomeView: View {
                 preferencesStore.save(updated)
             }
         }
+        .sheet(isPresented: $showWellbeingCheckIn) {
+            WellbeingCheckInView()
+        }
+    }
+
+    private var compactHomeContent: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            RotatingHeroCarousel(empleado: viewModel.empleado, preferencias: preferencesStore.preferences)
+
+            ImpactSummaryCard()
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    CompactActionCard(
+                        icon: "calendar.badge.clock",
+                        title: "Vacaciones",
+                        badge: "\(viewModel.empleado.diasVacacionesDisponibles) días",
+                        badgeColor: Color(hex: "#1976FF"),
+                        action: { open(.vacaciones) }
+                    )
+                    CompactActionCard(
+                        icon: "doc.text.fill",
+                        title: "Solicitudes",
+                        badge: "1 pend.",
+                        badgeColor: Color(hex: "#D97706"),
+                        action: { open(.solicitudes) }
+                    )
+                    CompactActionCard(
+                        icon: "ticket.fill",
+                        title: "Cupones",
+                        badge: "6 activos",
+                        badgeColor: Color(hex: "#7C5CFC"),
+                        action: { open(.benefits) }
+                    )
+                    CompactActionCard(
+                        icon: "heart.fill",
+                        title: "Bienestar",
+                        badge: nil,
+                        badgeColor: Color(hex: "#00C27C"),
+                        action: { showWellbeingCheckIn = true }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 4)
+            }
+            .padding(.horizontal, -20)
+
+            compactRecentRequests
+
+            PredictiveRecommendationsView(recommendations: MockDataService.recomendacionesHome) { destination in
+                openRecommendation(destination)
+            }
+
+            BienestarBannerCompact {
+                showWellbeingCheckIn = true
+            }
+
+            rhValueSection
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .padding(.bottom, 100)
+    }
+
+    private var compactRecentRequests: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Solicitudes recientes")
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(Color(hex: "#0D1B3E"))
+                Spacer()
+                Button {
+                    open(.solicitudes)
+                } label: {
+                    Text("Ver todas")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color(hex: "#1976FF"))
+                }
+            }
+
+            ForEach(viewModel.solicitudes.prefix(2)) { solicitud in
+                SolicitudRowCompact(solicitud: solicitud)
+            }
+        }
     }
 
     @ViewBuilder
     private func homeWidget(_ widget: String) -> some View {
         switch widget {
         case "vacaciones":
-            vacationSummaryCard
+            VStack(spacing: 12) {
+                vacationSummaryCard
+                ImpactSummaryCard()
+            }
         case "accesos":
             quickAccessSection
         case "bienestar":
@@ -184,7 +267,7 @@ struct HomeView: View {
                 Spacer()
 
                 Button("Registrar") {
-                    open(.bienestar)
+                    showWellbeingCheckIn = true
                 }
                     .font(.mabeCaption.weight(.semibold))
                     .foregroundStyle(Color.mabeBlue)
@@ -235,9 +318,71 @@ struct HomeView: View {
     private func open(_ destination: HomeQuickAccessDestination) {
         if destination == .chat {
             selectTab(.assistant)
+        } else if destination == .benefits {
+            selectTab(.benefits)
         } else {
             selectedDestination = destination
         }
+    }
+
+    private func openRecommendation(_ destination: HomeRecommendationDestination) {
+        switch destination {
+        case .vacaciones:
+            open(.vacaciones)
+        case .benefits:
+            open(.benefits)
+        case .solicitudes:
+            open(.solicitudes)
+        case .bienestar:
+            showWellbeingCheckIn = true
+        }
+    }
+
+    private var rhValueSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Avisos de RH")
+                .font(.mabeHeadline)
+                .foregroundStyle(Color.mabeGray900)
+
+            MabeCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(MockDataService.avisosRH, id: \.self) { aviso in
+                        HStack(spacing: 10) {
+                            Image(systemName: "megaphone.fill")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(Color.mabeBlue)
+                                .frame(width: 28, height: 28)
+                                .background(Color.mabeBlue.opacity(0.1))
+                                .clipShape(Circle())
+                            Text(aviso)
+                                .font(.mabeCaption)
+                                .foregroundStyle(Color.mabeGray600)
+                            Spacer()
+                        }
+                    }
+
+                    Divider()
+
+                    HStack(spacing: 0) {
+                        miniOperationalMetric(value: "3 min", label: "Respuesta RH")
+                        Divider().frame(height: 36)
+                        miniOperationalMetric(value: "72%", label: "Automatizados")
+                    }
+                }
+            }
+        }
+    }
+
+    private func miniOperationalMetric(value: String, label: String) -> some View {
+        VStack(spacing: 3) {
+            Text(value)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.mabeBlue)
+            Text(label)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(Color.mabeGray500)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -521,5 +666,127 @@ private struct QuickAccessCard: View {
                 .onEnded { _ in withAnimation(.spring(response: 0.3)) { isPressed = false } }
         )
         .accessibilityLabel(item.titulo)
+    }
+}
+
+private struct CompactActionCard: View {
+    let icon: String
+    let title: String
+    let badge: String?
+    let badgeColor: Color
+    let action: () -> Void
+    @State private var pressed = false
+
+    var body: some View {
+        Button {
+            Haptics.impact(.light)
+            action()
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                ZStack {
+                    Circle()
+                        .fill(badgeColor.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    Image(systemName: icon)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(badgeColor)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color(hex: "#0D1B3E"))
+                    if let badge {
+                        Text(badge)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(badgeColor)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(14)
+            .frame(width: 110, height: 112, alignment: .leading)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: Color(hex: "#0D1B3E").opacity(0.06), radius: 10, x: 0, y: 3)
+            .scaleEffect(pressed ? 0.96 : 1.0)
+        }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
+                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
+        )
+    }
+}
+
+private struct SolicitudRowCompact: View {
+    let solicitud: Solicitud
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "doc.text.fill")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 36, height: 36)
+                .background(LinearGradient.mabeHero)
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(solicitud.tipo)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(Color(hex: "#0D1B3E"))
+                    .lineLimit(1)
+                Text(solicitud.fecha.mabeShortDate)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color(hex: "#9AA5BE"))
+            }
+
+            Spacer()
+
+            MabeStatusBadge(status: solicitud.estado.rawValue, color: solicitud.estado.color)
+        }
+        .padding(12)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 8, x: 0, y: 3)
+    }
+}
+
+private struct BienestarBannerCompact: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundColor(Color(hex: "#00C27C"))
+                    .frame(width: 38, height: 38)
+                    .background(Color(hex: "#00C27C").opacity(0.12))
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("¿Cómo estás hoy?")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundColor(Color(hex: "#0D1B3E"))
+                    Text("Registra tu bienestar en menos de un minuto")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(Color(hex: "#9AA5BE"))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Text("Registrar")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(Color(hex: "#1976FF"))
+            }
+            .padding(14)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: Color(hex: "#0D1B3E").opacity(0.06), radius: 10, x: 0, y: 3)
+        }
+        .buttonStyle(.plain)
     }
 }

@@ -49,39 +49,44 @@ struct AppRouter: View {
 
 struct MainTabView: View {
     @Environment(AppState.self) private var appState
-    @State private var selectedTab: MainTab = .home
+    @State private var selectedIndex = 0
+
+    private var selectedTab: MainTab {
+        MainTab.allCases[selectedIndex]
+    }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            NavigationStack {
-                if let empleado = appState.currentUser {
-                    HomeView(empleado: empleado) { tab in
-                        selectedTab = tab
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                Group {
+                    switch selectedTab {
+                    case .home:
+                        if let empleado = appState.currentUser {
+                            HomeView(empleado: empleado) { tab in
+                                selectedIndex = MainTab.allCases.firstIndex(of: tab) ?? 0
+                            }
+                        }
+                    case .assistant:
+                        ChatView()
+                    case .benefits:
+                        BenefitsView()
+                    case .rh:
+                        MiRHView()
                     }
                 }
-            }
-            .tabItem {
-                Label(MainTab.home.title, systemImage: selectedTab == .home ? MainTab.home.iconFilled : MainTab.home.icon)
-            }
-            .tag(MainTab.home)
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear.frame(height: 88)
+                }
+                .animation(.easeInOut(duration: 0.22), value: selectedIndex)
 
-            NavigationStack {
-                ChatView()
+                VStack(spacing: 0) {
+                    Spacer()
+                    AppTabBar(selectedIndex: $selectedIndex)
+                        .padding(.bottom, 16)
+                }
+                .ignoresSafeArea(edges: .bottom)
             }
-            .tabItem {
-                Label(MainTab.assistant.title, systemImage: selectedTab == .assistant ? MainTab.assistant.iconFilled : MainTab.assistant.icon)
-            }
-            .tag(MainTab.assistant)
-
-            NavigationStack {
-                MiRHView()
-            }
-            .tabItem {
-                Label(MainTab.rh.title, systemImage: selectedTab == .rh ? MainTab.rh.iconFilled : MainTab.rh.icon)
-            }
-            .tag(MainTab.rh)
         }
-        .tint(Color.mabeBlue)
     }
 }
 
