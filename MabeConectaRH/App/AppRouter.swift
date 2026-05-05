@@ -86,6 +86,15 @@ struct MainTabView: View {
                 }
                 .ignoresSafeArea(edges: .bottom)
             }
+            .onChange(of: appState.requestedMainTab) { _, requestedTab in
+                guard let requestedTab,
+                      let index = MainTab.allCases.firstIndex(of: requestedTab)
+                else { return }
+                withAnimation(.easeInOut(duration: 0.22)) {
+                    selectedIndex = index
+                }
+                appState.consumeRequestedMainTab()
+            }
         }
     }
 }

@@ -14,6 +14,15 @@ struct AIService {
             )
         }
 
+        if let prestacion = ChatViewModel.checkForPrestacionLink(in: normalizado) {
+            return ChatMessage(
+                rol: .asistente,
+                texto: "Sobre **\(prestacion.nombre)**: \(prestacion.descripcion) Su valor principal es **\(prestacion.valor)**. Puedes abrir la tarjeta para ver condiciones y comparativa.",
+                fecha: Date(),
+                sugerencias: ["Ver prestaciones", "Hablar con RH"]
+            )
+        }
+
         if normalizado.contains("constancia") || normalizado.contains("empleo") {
             return ChatMessage(
                 rol: .asistente,

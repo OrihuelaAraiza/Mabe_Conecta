@@ -20,6 +20,8 @@
 		1B0000000000000000000007 /* WellbeingCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000007 /* WellbeingCheckInView.swift */; };
 		1B0000000000000000000008 /* HRSupportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000008 /* HRSupportSheet.swift */; };
 		1B0000000000000000000009 /* CuponesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000009 /* CuponesView.swift */; };
+		1B0000000000000000000010 /* PrestacionesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000010 /* PrestacionesView.swift */; };
+		1B0000000000000000000011 /* Prestacion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000011 /* Prestacion.swift */; };
 		1A2B3C4D5E6F708192A3B4C5 /* MicroAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543210FEDCBA9876543210F /* MicroAnimations.swift */; };
 		1C721CC5377DB6975D12011F /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4651E529C4B40E8344248F /* ChatView.swift */; };
 		26A5D144F64AE05968C522A5 /* MabeLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D08DF3A9FAA5D70D3D4B2DD /* MabeLogoView.swift */; };
@@ -85,6 +87,8 @@
 		1A0000000000000000000007 /* WellbeingCheckInView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WellbeingCheckInView.swift; sourceTree = "<group>"; };
 		1A0000000000000000000008 /* HRSupportSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HRSupportSheet.swift; sourceTree = "<group>"; };
 		1A0000000000000000000009 /* CuponesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CuponesView.swift; sourceTree = "<group>"; };
+		1A0000000000000000000010 /* PrestacionesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrestacionesView.swift; sourceTree = "<group>"; };
+		1A0000000000000000000011 /* Prestacion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Prestacion.swift; sourceTree = "<group>"; };
 		2479229EB0111CF9F8FBAA7C /* MockDataService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MockDataService.swift; sourceTree = "<group>"; };
 		92A000000000000000000001 /* SessionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
 		256CCAE196AAB52F9C5375EE /* AppRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
@@ -362,6 +366,7 @@
 				0E2CAF64F8C16A22F54AE0EE /* Empleado.swift */,
 				F9054CA25FF911C85CC92172 /* EstadoBienestar.swift */,
 				90ABCDEF1234567890ABCDEF /* HeroFeature.swift */,
+				1A0000000000000000000011 /* Prestacion.swift */,
 				6C706E1BB35E88A536BB9A0E /* Solicitud.swift */,
 				2A475E6E59556DB972881D57 /* UserPreferences.swift */,
 			);
@@ -525,6 +530,7 @@
 				1A0000000000000000000003 /* BenefitsView.swift */,
 				1A0000000000000000000004 /* CouponDetailView.swift */,
 				1A0000000000000000000009 /* CuponesView.swift */,
+				1A0000000000000000000010 /* PrestacionesView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -604,6 +610,7 @@
 				A72CED86C197597A307148F6 /* MabeConectaRHApp.swift in Sources */,
 				D464F41765467B7E33B905F7 /* ChatSession.swift in Sources */,
 				1B0000000000000000000001 /* Coupon.swift in Sources */,
+				1B0000000000000000000011 /* Prestacion.swift in Sources */,
 				36EBABC524271047AE3D97D3 /* Empleado.swift in Sources */,
 				C6CCD2A194A426566BEF5635 /* EstadoBienestar.swift in Sources */,
 				7138E9A0B1C2D3E4F5061728 /* HeroFeature.swift in Sources */,
@@ -622,6 +629,7 @@
 				1B0000000000000000000003 /* BenefitsView.swift in Sources */,
 				1B0000000000000000000004 /* CouponDetailView.swift in Sources */,
 				1B0000000000000000000009 /* CuponesView.swift in Sources */,
+				1B0000000000000000000010 /* PrestacionesView.swift in Sources */,
 				EF5367080CB988CCD86C1077 /* ChatViewModel.swift in Sources */,
 				1C721CC5377DB6975D12011F /* ChatView.swift in Sources */,
 				C4346407745AA7286572854E /* HomeViewModel.swift in Sources */,

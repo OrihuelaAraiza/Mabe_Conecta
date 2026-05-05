@@ -29,6 +29,8 @@ final class AppState {
     var isDemoMode = false
     var hasCompletedOnboarding = false
     var toastMessage: String?
+    var pendingChatPrompt: String?
+    var requestedMainTab: MainTab?
 
     var flow: AppFlow {
         guard currentUser != nil else { return .login }
@@ -81,6 +83,20 @@ final class AppState {
                 }
             }
         }
+    }
+
+    func openAssistant(prefill prompt: String) {
+        pendingChatPrompt = prompt
+        requestedMainTab = .assistant
+    }
+
+    func consumeRequestedMainTab() {
+        requestedMainTab = nil
+    }
+
+    func consumePendingChatPrompt() -> String? {
+        defer { pendingChatPrompt = nil }
+        return pendingChatPrompt
     }
 
     func toggleDemoRole() {

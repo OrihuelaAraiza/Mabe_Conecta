@@ -8,6 +8,7 @@ struct BenefitsView: View {
             VStack(alignment: .leading, spacing: 18) {
                 header
                 summaryCard
+                prestacionesShortcut
                 filters
                 couponsSection
                 historySection
@@ -53,6 +54,40 @@ struct BenefitsView: View {
                 .foregroundStyle(Color.mabeGray500)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private var prestacionesShortcut: some View {
+        NavigationLink {
+            PrestacionesView()
+        } label: {
+            MabeCard {
+                HStack(spacing: 14) {
+                    Image(systemName: "gift.fill")
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundStyle(Color.white)
+                        .frame(width: 48, height: 48)
+                        .background(LinearGradient.mabeHero)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Mis Prestaciones")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(Color.mabeGray900)
+                        Text("\(MockDataService.numPrestaciones) prestaciones activas · \(MockDataService.valorPaquetePrestaciones)")
+                            .font(.mabeCaption)
+                            .foregroundStyle(Color.mabeGray500)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Color.mabeGray400)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     private var filters: some View {

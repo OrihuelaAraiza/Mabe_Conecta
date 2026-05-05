@@ -19,7 +19,10 @@ struct ChatView: View {
                         ScrollView {
                             LazyVStack(spacing: 14) {
                                 ForEach(viewModel.mensajes) { mensaje in
-                                    ChatBubble(message: mensaje) { suggestion in
+                                    ChatBubble(
+                                        message: mensaje,
+                                        linkedPrestacion: viewModel.linkedPrestaciones[mensaje.id]
+                                    ) { suggestion in
                                         Task { await viewModel.enviar(suggestion) }
                                     }
                                     .id(mensaje.id)
@@ -80,6 +83,12 @@ struct ChatView: View {
         }
         .mabeNavigationBarTitleDisplayMode(.inline)
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .onAppear {
+            consumePendingPromptIfNeeded()
+        }
+        .onChange(of: appState.pendingChatPrompt) {
+            consumePendingPromptIfNeeded()
+        }
         .sheet(isPresented: $showSupport) {
             HRSupportSheet(context: "Solicitud desde asistente RH")
         }
@@ -124,6 +133,11 @@ struct ChatView: View {
                 proxy.scrollTo(last.id, anchor: .bottom)
             }
         }
+    }
+
+    private func consumePendingPromptIfNeeded() {
+        guard let prompt = appState.consumePendingChatPrompt(), !prompt.isEmpty else { return }
+        viewModel.textoActual = prompt
     }
 }
 
@@ -190,6 +204,7 @@ private struct EscalatedChatsView: View {
 
 private struct ChatBubble: View {
     let message: ChatMessage
+    let linkedPrestacion: Prestacion?
     let onSuggestion: (String) -> Void
 
     var body: some View {
@@ -224,6 +239,12 @@ private struct ChatBubble: View {
                     y: message.rol == .usuario ? 4 : 2
                 )
                 .frame(maxWidth: 290, alignment: message.rol == .usuario ? .trailing : .leading)
+
+            if let linkedPrestacion, message.rol == .asistente {
+                PrestacionMiniCard(prestacion: linkedPrestacion)
+                    .frame(maxWidth: 290, alignment: .leading)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
 
             if message.rol == .asistente, !message.sugerencias.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {

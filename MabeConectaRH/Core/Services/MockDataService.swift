@@ -162,6 +162,168 @@ struct MockDataService {
         }
     }()
 
+    static let prestaciones: [Prestacion] = [
+        Prestacion(
+            id: "aguinaldo",
+            nombre: "Aguinaldo",
+            descripcion: "Pago adicional a fin de año equivalente a 30 días de salario.",
+            detalle: "Se paga en diciembre antes del día 20. El doble de lo que marca la ley federal: 15 días.",
+            valor: "30 días",
+            vsLey: "Ley: 15 días",
+            icon: "banknote.fill",
+            color: Color(hex: "#003087"),
+            categoria: .economica,
+            badge: "2x la ley",
+            esDestacada: true
+        ),
+        Prestacion(
+            id: "prima",
+            nombre: "Prima vacacional",
+            descripcion: "Porcentaje adicional sobre tu salario al salir de vacaciones.",
+            detalle: "Al tomar vacaciones recibes el 22% adicional sobre los días que goces. Aplica sobre salario diario.",
+            valor: "22%",
+            vsLey: "Ley mín: 25%",
+            icon: "sun.max.fill",
+            color: Color(hex: "#0EA5E9"),
+            categoria: .economica,
+            badge: nil,
+            esDestacada: false
+        ),
+        Prestacion(
+            id: "fondo",
+            nombre: "Fondo de ahorro",
+            descripcion: "Mabe aporta el 12.5% de tu salario mensual a tu fondo personal de ahorro.",
+            detalle: "Tu aportación y la de Mabe crecen juntas. Puedes retirarlo al final del año o al separarte de la empresa. Libre de impuestos dentro del límite legal.",
+            valor: "12.5%",
+            vsLey: nil,
+            icon: "building.columns.fill",
+            color: Color(hex: "#00704A"),
+            categoria: .economica,
+            badge: "Ahorro garantizado",
+            esDestacada: true
+        ),
+        Prestacion(
+            id: "vales",
+            nombre: "Vales de despensa",
+            descripcion: "Tarjeta mensual para compras de supermercado equivalente al 8% de tu salario.",
+            detalle: "Cargada mensualmente en tarjeta electrónica. Aceptada en Walmart, Chedraui, La Comer, OXXO y más de 20,000 establecimientos. Libre de ISR.",
+            valor: "8% del salario",
+            vsLey: nil,
+            icon: "cart.fill",
+            color: Color(hex: "#D97706"),
+            categoria: .economica,
+            badge: "Libre de ISR",
+            esDestacada: true
+        ),
+        Prestacion(
+            id: "bonos",
+            nombre: "Bonos cuatrimestrales",
+            descripcion: "Bono de desempeño tres veces al año: abril, agosto y diciembre.",
+            detalle: "El monto varía según el cumplimiento de objetivos individuales y de planta. Puede representar hasta un mes adicional de salario por período.",
+            valor: "3 veces al año",
+            vsLey: nil,
+            icon: "star.fill",
+            color: Color(hex: "#D97706"),
+            categoria: .economica,
+            badge: "Por desempeño",
+            esDestacada: false
+        ),
+        Prestacion(
+            id: "caja",
+            nombre: "Caja de ahorro",
+            descripcion: "Acceso a la caja de ahorro interna de Mabe con tasas preferenciales.",
+            detalle: "Puedes solicitar préstamos personales con tasas por debajo del mercado. También puedes ahorrar con rendimientos superiores a la banca tradicional. Descuento automático por nómina.",
+            valor: "Tasas preferenciales",
+            vsLey: nil,
+            icon: "creditcard.fill",
+            color: Color(hex: "#003087"),
+            categoria: .economica,
+            badge: nil,
+            esDestacada: false
+        ),
+        Prestacion(
+            id: "sgmm",
+            nombre: "Seguro de gastos médicos mayores",
+            descripcion: "Cobertura de salud amplia para ti y tu familia directa.",
+            detalle: "Incluye hospitalización, cirugías, medicamentos, maternidad y enfermedades crónicas. Suma asegurada superior al IMSS. Cubre cónyuge e hijos. Deducible accesible.",
+            valor: "Tú + familia",
+            vsLey: nil,
+            icon: "cross.circle.fill",
+            color: Color(hex: "#00C27C"),
+            categoria: .saludBienestar,
+            badge: "Premium",
+            esDestacada: true
+        ),
+        Prestacion(
+            id: "cumple",
+            nombre: "Día de cumpleaños",
+            descripcion: "El día de tu cumpleaños es un día libre pagado.",
+            detalle: "Ausentismo autorizado el día exacto de tu cumpleaños. Si cae en fin de semana o festivo, puedes tomarlo el lunes siguiente. Solo avisa a tu supervisor.",
+            valor: "1 día libre",
+            vsLey: nil,
+            icon: "balloon.fill",
+            color: Color(hex: "#EC4899"),
+            categoria: .saludBienestar,
+            badge: "Festéjate",
+            esDestacada: false
+        ),
+        Prestacion(
+            id: "maternidad",
+            nombre: "Licencia de maternidad extendida",
+            descripcion: "Licencia de maternidad de hasta 9 meses, por encima de los 3 meses de ley.",
+            detalle: "La ley federal otorga 84 días. Mabe ofrece hasta 9 meses con goce de sueldo parcial en los meses adicionales. Aplica también para adopción. Paternidad: 5 días hábiles adicionales a los legales.",
+            valor: "3 a 9 meses",
+            vsLey: "Ley: 3 meses",
+            icon: "figure.and.child.holdinghands",
+            color: Color(hex: "#7C5CFC"),
+            categoria: .saludBienestar,
+            badge: "3x la ley",
+            esDestacada: true
+        ),
+        Prestacion(
+            id: "posgrado",
+            nombre: "Apoyo académico — Posgrado",
+            descripcion: "Mabe apoya económicamente a empleados que estudian maestría o doctorado.",
+            detalle: "Cubre parcial o totalmente inscripción y colegiaturas en programas reconocidos. Se evalúa caso por caso. Requiere mantenerse activo durante y después del estudio.",
+            valor: "Apoyo económico",
+            vsLey: nil,
+            icon: "graduationcap.fill",
+            color: Color(hex: "#7C5CFC"),
+            categoria: .desarrollo,
+            badge: "Maestría · Doctorado",
+            esDestacada: false
+        ),
+        Prestacion(
+            id: "prepa",
+            nombre: "Prepa Mabe",
+            descripcion: "Operarios sin bachillerato pueden terminar la preparatoria sin costo.",
+            detalle: "Programa en convenio con SEP y sistema de bachillerato abierto. Las clases son fuera de turno dentro de instalaciones. Certificación oficial para operadores que no concluyeron bachillerato.",
+            valor: "100% gratuito",
+            vsLey: nil,
+            icon: "book.closed.fill",
+            color: Color(hex: "#0EA5E9"),
+            categoria: .desarrollo,
+            badge: "Certificado SEP",
+            esDestacada: false
+        ),
+        Prestacion(
+            id: "convenios",
+            nombre: "Convenios y descuentos",
+            descripcion: "Acceso a descuentos exclusivos en múltiples categorías por ser empleado Mabe.",
+            detalle: "Descuentos en restaurantes, cines, parques, gimnasios, ópticas, farmacias, electrónicos y viajes. Los convenios se actualizan periódicamente.",
+            valor: "Múltiples categorías",
+            vsLey: nil,
+            icon: "tag.fill",
+            color: Color(hex: "#D97706"),
+            categoria: .convenios,
+            badge: "Descuentos exclusivos",
+            esDestacada: false
+        )
+    ]
+
+    static let valorPaquetePrestaciones = "+50% sobre salario base"
+    static let numPrestaciones = prestaciones.count
+
     static let coupons: [Coupon] = [
         Coupon(
             id: "coupon-001",

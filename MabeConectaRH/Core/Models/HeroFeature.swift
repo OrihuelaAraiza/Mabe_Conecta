@@ -11,7 +11,7 @@ struct HeroFeature {
     let contextoTemporal: String
 
     static func from(_ id: String) -> HeroFeature {
-        features[id] ?? features["vacaciones"]!
+        features[id] ?? features["prestaciones"]!
     }
 
     static func contextoParaVacaciones() -> String {
@@ -123,6 +123,20 @@ struct HeroFeature {
             valorPrincipal: { _ in "3" },
             subtitulo: { _ in "completados este mes" },
             contextoTemporal: "Noviembre · 3 completados, 1 en revisión"
+        ),
+        "prestaciones": HeroFeature(
+            id: "prestaciones",
+            icon: "gift.fill",
+            gradient: LinearGradient(
+                colors: [Color(hex: "#003087"), Color(hex: "#1976FF")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            shadowColor: Color(hex: "#1976FF").opacity(0.35),
+            unidad: "beneficios",
+            valorPrincipal: { _ in "\(MockDataService.numPrestaciones)" },
+            subtitulo: { _ in "prestaciones activas" },
+            contextoTemporal: "Tu paquete vale +50% sobre tu salario base"
         )
     ]
 }

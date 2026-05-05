@@ -153,8 +153,10 @@ struct HeroWidget: View {
         switch featureActiva.id {
         case "vacaciones":
             VacacionesView(empleado: empleado)
+        case "prestaciones":
+            PrestacionesView()
         default:
-            SolicitudesView()
+            PrestacionesView()
         }
     }
 
@@ -182,9 +184,9 @@ struct RotatingHeroCarousel: View {
     private let heroHeight: CGFloat = 170
 
     var features: [HeroFeature] {
-        var selected = preferencias.interesesSeleccionados.compactMap { HeroFeature.features[$0] }
+        var selected = preferencias.interesesSeleccionados.map { HeroFeature.features[$0] ?? HeroFeature.features["prestaciones"]! }
         if selected.isEmpty {
-            selected = [HeroFeature.features["vacaciones"]!, HeroFeature.features["nomina"]!]
+            selected = [HeroFeature.features["prestaciones"]!, HeroFeature.features["vacaciones"]!]
         } else if selected.count == 1, let nomina = HeroFeature.features["nomina"], selected.first?.id != nomina.id {
             selected.append(nomina)
         } else if selected.count == 1, let vacaciones = HeroFeature.features["vacaciones"], selected.first?.id != vacaciones.id {
@@ -489,10 +491,12 @@ private struct HeroCard: View {
         switch feature.id {
         case "vacaciones":
             VacacionesView(empleado: empleado)
+        case "prestaciones":
+            PrestacionesView()
         case "historial", "constancias", "permisos", "incapacidades", "nomina":
             SolicitudesView()
         default:
-            SolicitudesView()
+            PrestacionesView()
         }
     }
 

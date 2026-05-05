@@ -14,6 +14,7 @@ struct OnboardingView: View {
         OnboardingChip(id: "vacaciones", icon: "calendar", title: "Vacaciones"),
         OnboardingChip(id: "constancias", icon: "doc.text", title: "Constancias"),
         OnboardingChip(id: "nomina", icon: "dollarsign.circle", title: "Nómina"),
+        OnboardingChip(id: "prestaciones", icon: "gift.fill", title: "Mis Prestaciones"),
         OnboardingChip(id: "permisos", icon: "checklist", title: "Permisos"),
         OnboardingChip(id: "incapacidades", icon: "cross.case", title: "Incapacidades"),
         OnboardingChip(id: "historial", icon: "chart.bar.doc.horizontal", title: "Mi historial")

@@ -31,6 +31,12 @@ struct MiRHView: View {
                     } label: {
                         MenuRow(icon: "ticket.fill", title: "Mis Cupones", color: Color(hex: "#7C5CFC"))
                     }
+
+                    NavigationLink {
+                        PrestacionesView()
+                    } label: {
+                        MenuRow(icon: "gift.fill", title: "Mis Prestaciones", color: Color(hex: "#003087"))
+                    }
                 }
 
                 menuSection("BIENESTAR") {
