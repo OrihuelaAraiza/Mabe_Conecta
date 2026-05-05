@@ -6,6 +6,7 @@ struct CuponesView: View {
     @State private var showingRedeemSheet = false
     @State private var selectedCoupon: Cupon?
     @State private var confettiCounter = 0
+    @State private var isLoadingCoupons = true
     @Environment(\.dismiss) private var dismiss
 
     private var cuponesFiltrados: [Cupon] {
@@ -23,19 +24,13 @@ struct CuponesView: View {
                 Divider().opacity(0.3)
 
                 ScrollView {
-                    LazyVGrid(
-                        columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
-                        spacing: 12
-                    ) {
-                        ForEach(cuponesFiltrados) { cupon in
-                            PhysicalCouponCard(
-                                cupon: cupon,
-                                isRedeemed: redeemedCoupons.contains(cupon.id),
-                                onTap: {
-                                    selectedCoupon = cupon
-                                    showingRedeemSheet = true
-                                }
-                            )
+                    Group {
+                        if isLoadingCoupons {
+                            couponSkeletonGrid
+                                .transition(.opacity)
+                        } else {
+                            couponGrid
+                                .transition(.opacity)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -51,6 +46,13 @@ struct CuponesView: View {
         }
         .navigationBarHidden(true)
         .background(Color(hex: "#F8F9FC"))
+        .task {
+            guard isLoadingCoupons else { return }
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            withAnimation(.easeInOut(duration: 0.22)) {
+                isLoadingCoupons = false
+            }
+        }
         .sheet(isPresented: $showingRedeemSheet) {
             if let selectedCoupon {
                 CuponDetailSheet(
@@ -66,6 +68,38 @@ struct CuponesView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(24)
+            }
+        }
+    }
+
+    private var gridColumns: [GridItem] {
+        [
+            GridItem(.flexible(minimum: 145), spacing: 12),
+            GridItem(.flexible(minimum: 145), spacing: 12)
+        ]
+    }
+
+    private var couponGrid: some View {
+        LazyVGrid(columns: gridColumns, spacing: 12) {
+            ForEach(cuponesFiltrados) { cupon in
+                PhysicalCouponCard(
+                    cupon: cupon,
+                    isRedeemed: redeemedCoupons.contains(cupon.id),
+                    onTap: {
+                        selectedCoupon = cupon
+                        showingRedeemSheet = true
+                    }
+                )
+                .frame(height: 190)
+            }
+        }
+    }
+
+    private var couponSkeletonGrid: some View {
+        LazyVGrid(columns: gridColumns, spacing: 12) {
+            ForEach(0..<6, id: \.self) { index in
+                CouponSkeletonCard(index: index)
+                    .frame(height: 190)
             }
         }
     }
@@ -251,12 +285,66 @@ private struct CuponCard: View {
     }
 }
 
+private struct CouponSkeletonCard: View {
+    let index: Int
+    @State private var pulse = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(hex: "#DDE3F0"),
+                            Color(hex: "#EFF3FA"),
+                            Color(hex: "#DDE3F0")
+                        ],
+                        startPoint: pulse ? .trailing : .leading,
+                        endPoint: pulse ? .leading : .trailing
+                    )
+                )
+                .frame(height: 100)
+
+            DashedDivider()
+                .stroke(style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                .foregroundColor(Color(hex: "#DDE3F0"))
+                .frame(height: 1)
+
+            VStack(alignment: .leading, spacing: 9) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(hex: "#DDE3F0"))
+                    .frame(height: 12)
+                    .frame(maxWidth: .infinity)
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(hex: "#EFF3FA"))
+                    .frame(width: 82, height: 10)
+                Spacer()
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(hex: "#DDE3F0"))
+                    .frame(height: 18)
+                    .opacity(0.7)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(Color.white)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 10, x: 0, y: 3)
+        .opacity(pulse ? 0.7 : 1.0)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true).delay(Double(index) * 0.04)) {
+                pulse = true
+            }
+        }
+    }
+}
+
 private struct PhysicalCouponCard: View {
     let cupon: Cupon
     let isRedeemed: Bool
     let onTap: () -> Void
 
-    @State private var shimmerPhase: CGFloat = -1
+    @State private var shimmerPhase: CGFloat = 0
     @State private var pressed = false
 
     var body: some View {
@@ -264,6 +352,9 @@ private struct PhysicalCouponCard: View {
             ZStack {
                 VStack(spacing: 0) {
                     ZStack(alignment: .topLeading) {
+                        Color(hex: "#003087")
+                            .frame(height: 100)
+
                         cupon.gradient
                             .frame(height: 100)
 
@@ -301,21 +392,23 @@ private struct PhysicalCouponCard: View {
                         .padding(10)
 
                         LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: shimmerPhase - 0.2),
-                                .init(color: .white.opacity(0.12), location: shimmerPhase),
-                                .init(color: .clear, location: shimmerPhase + 0.2)
-                            ],
+                            colors: [.clear, .white.opacity(0.12), .clear],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
+                        .frame(width: 72)
+                        .rotationEffect(.degrees(18))
+                        .offset(x: shimmerPhase * 260 - 110)
                         .onAppear {
                             withAnimation(.linear(duration: 3).repeatForever(autoreverses: false).delay(Double.random(in: 0...2))) {
-                                shimmerPhase = 1.5
+                                shimmerPhase = 1
                             }
                         }
+                        .allowsHitTesting(false)
+                        .clipped()
                     }
                     .frame(height: 100)
+                    .clipped()
 
                     DashedDivider()
                         .stroke(style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
@@ -339,7 +432,7 @@ private struct PhysicalCouponCard: View {
                             .font(.system(size: 13, weight: .bold))
                             .foregroundColor(Color(hex: "#0D1B3E"))
                             .lineLimit(2)
-                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(minHeight: 32, alignment: .topLeading)
 
                         HStack {
                             HStack(spacing: 3) {
@@ -361,14 +454,17 @@ private struct PhysicalCouponCard: View {
                             .opacity(0.25)
                     }
                     .padding(10)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .background(Color.white)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .shadow(color: Color(hex: "#0D1B3E").opacity(0.08), radius: 12, x: 0, y: 4)
 
                 if isRedeemed {
-                    ZStack {
-                        Color.black.opacity(0.35)
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.black.opacity(0.35))
+                        .overlay {
                         Text("CANJEADO")
                             .font(.system(size: 18, weight: .black))
                             .foregroundColor(.white.opacity(0.9))
@@ -380,10 +476,13 @@ private struct PhysicalCouponCard: View {
                                     .rotationEffect(.degrees(-25))
                                     .offset(x: 1, y: 1)
                             }
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        }
+                        .allowsHitTesting(false)
                 }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 190)
+            .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .scaleEffect(pressed ? 0.96 : 1.0)
         }
         .buttonStyle(.plain)
