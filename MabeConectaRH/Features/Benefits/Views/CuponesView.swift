@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct CuponesView: View {
+    let showsBackButton: Bool
+    let title: String
+
     @State private var selectedCategory: CuponCategory = .todos
     @State private var redeemedCoupons: Set<String> = []
     @State private var showingRedeemSheet = false
@@ -15,22 +18,38 @@ struct CuponesView: View {
             : MockDataService.cupones.filter { $0.categoria == selectedCategory }
     }
 
+    init(showsBackButton: Bool = true, title: String = "Mis Cupones") {
+        self.showsBackButton = showsBackButton
+        self.title = title
+    }
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 header
+                benefitsSummary
                 categoryScroller
 
                 Divider().opacity(0.3)
 
                 ScrollView {
-                    Group {
-                        if isLoadingCoupons {
-                            couponSkeletonGrid
-                                .transition(.opacity)
-                        } else {
-                            couponGrid
-                                .transition(.opacity)
+                    VStack(alignment: .leading, spacing: 16) {
+                        prestacionesShortcut
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Cupones disponibles")
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(Color(hex: "#0D1B3E"))
+
+                            Group {
+                                if isLoadingCoupons {
+                                    couponSkeletonGrid
+                                        .transition(.opacity)
+                                } else {
+                                    couponGrid
+                                        .transition(.opacity)
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -106,20 +125,22 @@ struct CuponesView: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(Color(hex: "#003087"))
-                    .frame(width: 34, height: 34)
-                    .background(Color.white)
-                    .clipShape(Circle())
+            if showsBackButton {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color(hex: "#003087"))
+                        .frame(width: 34, height: 34)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Regresar")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Regresar")
 
-            Text("Mis Cupones")
+            Text(title)
                 .font(.system(size: 22, weight: .bold))
                 .foregroundColor(Color(hex: "#0D1B3E"))
             Spacer()
@@ -140,6 +161,80 @@ struct CuponesView: View {
         .padding(.top, 16)
         .padding(.bottom, 12)
         .background(Color(hex: "#F8F9FC"))
+    }
+
+    private var benefitsSummary: some View {
+        HStack(spacing: 0) {
+            summaryItem(
+                value: "\(max(0, MockDataService.cupones.count - redeemedCoupons.count))",
+                label: "Disponibles",
+                color: Color(hex: "#003087")
+            )
+            Divider().frame(height: 38)
+            summaryItem(value: "2", label: "Por expirar", color: Color(hex: "#D97706"))
+            Divider().frame(height: 38)
+            summaryItem(value: "\(redeemedCoupons.count)", label: "Usados", color: Color(hex: "#00C27C"))
+        }
+        .padding(.vertical, 12)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: Color(hex: "#0D1B3E").opacity(0.06), radius: 12, x: 0, y: 4)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 12)
+    }
+
+    private func summaryItem(value: String, label: String, color: Color) -> some View {
+        VStack(spacing: 3) {
+            Text(value)
+                .font(.system(size: 21, weight: .bold, design: .rounded))
+                .foregroundColor(color)
+            Text(label)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(Color(hex: "#9AA5BE"))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var prestacionesShortcut: some View {
+        NavigationLink {
+            PrestacionesView()
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "gift.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 46, height: 46)
+                    .background(
+                        LinearGradient(
+                            colors: [Color(hex: "#003087"), Color(hex: "#1976FF")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Mis Prestaciones")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundColor(Color(hex: "#0D1B3E"))
+                    Text("\(MockDataService.numPrestaciones) prestaciones activas · \(MockDataService.valorPaquetePrestaciones)")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(Color(hex: "#9AA5BE"))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(Color(hex: "#DDE3F0"))
+            }
+            .padding(14)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: Color(hex: "#0D1B3E").opacity(0.06), radius: 12, x: 0, y: 4)
+        }
+        .buttonStyle(.plain)
     }
 
     private var categoryScroller: some View {
