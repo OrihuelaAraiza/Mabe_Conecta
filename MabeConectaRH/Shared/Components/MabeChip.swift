@@ -12,13 +12,7 @@ struct MabeChip: View {
                 .foregroundStyle(isSelected ? Color.white : Color.mabeBlue)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background {
-                    if isSelected {
-                        LinearGradient.mabeHero
-                    } else {
-                        Color.mabeSurface2
-                    }
-                }
+                .background(isSelected ? Color.mabeBlue : Color.mabeSurface2)
                 .clipShape(Capsule())
                 .overlay {
                     Capsule()

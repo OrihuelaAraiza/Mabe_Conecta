@@ -107,7 +107,7 @@ struct VacacionesView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(LinearGradient.mabeHero)
+                .background(Color(hex: "#003087"))
                 .clipShape(Capsule())
                 .shadow(color: Color(hex: "#1976FF").opacity(0.3), radius: 8, x: 0, y: 3)
             }
@@ -421,7 +421,7 @@ private struct AirbnbDayCell: View {
 
             if isSelected {
                 Circle()
-                    .fill(LinearGradient.mabeHero)
+                    .fill(Color(hex: "#003087"))
                     .frame(width: 40, height: 40)
                     .shadow(color: Color(hex: "#1976FF").opacity(0.4), radius: 8, x: 0, y: 3)
                     .scaleEffect(bounced ? 1.0 : 0.8)
@@ -556,7 +556,7 @@ private struct RangoSeleccionadoCard: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(puedeEnviar ? AnyShapeStyle(LinearGradient.mabeHero) : AnyShapeStyle(Color(hex: "#9AA5BE")))
+                    .background(puedeEnviar ? AnyShapeStyle(Color(hex: "#003087")) : AnyShapeStyle(Color(hex: "#9AA5BE")))
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .shadow(color: puedeEnviar ? Color(hex: "#1976FF").opacity(0.3) : .clear, radius: 10, x: 0, y: 4)
                 }
@@ -685,7 +685,7 @@ private struct SolicitudVacacionesFlow: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
-                        .background(LinearGradient.mabeHero)
+                        .background(Color(hex: "#003087"))
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         .shadow(color: Color(hex: "#1976FF").opacity(0.3), radius: 10, x: 0, y: 4)
                 }
@@ -754,7 +754,7 @@ private struct SolicitudVacacionesFlow: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
-                .background(LinearGradient.mabeHero)
+                .background(Color(hex: "#003087"))
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .shadow(color: Color(hex: "#1976FF").opacity(0.3), radius: 10, x: 0, y: 4)
 
@@ -799,7 +799,7 @@ private struct SolicitudVacacionesFlow: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
-                .background(LinearGradient.mabeHero)
+                .background(Color(hex: "#003087"))
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)

@@ -634,7 +634,7 @@ private struct QuickAccessCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(LinearGradient.mabeHero)
+                        .fill(Color.mabeBlue)
                         .frame(width: 44, height: 44)
                     Image(systemName: item.icono)
                         .font(.system(size: 18, weight: .semibold))

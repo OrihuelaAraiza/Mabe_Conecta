@@ -57,7 +57,7 @@ struct ChatView: View {
                                 .font(.system(size: 17, weight: .bold))
                                 .foregroundStyle(Color.white)
                                 .frame(width: 42, height: 42)
-                                .background(LinearGradient.mabeHero)
+                                .background(Color.mabeBlue)
                                 .clipShape(Circle())
                                 .scaleEffect(viewModel.textoActual.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.72 : 1)
                                 .animation(.spring(response: 0.25, dampingFraction: 0.7), value: viewModel.textoActual.isEmpty)
@@ -214,7 +214,7 @@ private struct ChatBubble: View {
                     .font(.mabeLabel)
                     .foregroundStyle(Color.white)
                     .frame(width: 28, height: 28)
-                    .background(LinearGradient.mabeHero)
+                    .background(Color.mabeBlue)
                     .clipShape(Circle())
                     .mabeCardShadow()
             }
@@ -226,7 +226,7 @@ private struct ChatBubble: View {
                 .padding(.vertical, 11)
                 .background {
                     if message.rol == .usuario {
-                        LinearGradient.mabeHero
+                        Color.mabeBlue
                     } else {
                         Color.mabeSurface
                     }

@@ -547,7 +547,7 @@ struct CheckInGuiadoSheet: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
-                .background(LinearGradient(colors: [Color(hex: "#003087"), Color(hex: "#1976FF")], startPoint: .leading, endPoint: .trailing))
+                .background(Color(hex: "#003087"))
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .shadow(color: Color(hex: "#1976FF").opacity(0.3), radius: 10, x: 0, y: 4)
         }
@@ -1039,7 +1039,7 @@ struct SupportBannerCard: View {
                     .foregroundColor(.white)
             }
             .padding(16)
-            .background(LinearGradient(colors: [Color(hex: "#003087"), Color(hex: "#1976FF")], startPoint: .leading, endPoint: .trailing))
+            .background(Color(hex: "#003087"))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: Color(hex: "#1976FF").opacity(0.3), radius: 12, x: 0, y: 4)
         }

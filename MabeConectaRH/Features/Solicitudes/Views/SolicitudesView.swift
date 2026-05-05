@@ -79,7 +79,7 @@ struct SolicitudesView: View {
                         .font(.callout.weight(.semibold))
                         .foregroundStyle(viewModel.selectedSegment == segment ? .white : Color.mabeBlue)
                         .frame(maxWidth: .infinity, minHeight: 42)
-                        .background(viewModel.selectedSegment == segment ? AnyShapeStyle(LinearGradient.mabeHero) : AnyShapeStyle(Color.clear))
+                        .background(viewModel.selectedSegment == segment ? AnyShapeStyle(Color.mabeBlue) : AnyShapeStyle(Color.clear))
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .buttonStyle(.plain)

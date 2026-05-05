@@ -728,7 +728,7 @@ private struct CuponDetailSheet: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
-                    .background(LinearGradient.mabeHero)
+                    .background(Color(hex: "#003087"))
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
         } else {
@@ -745,7 +745,7 @@ private struct CuponDetailSheet: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
-                .background(LinearGradient.mabeHero)
+                .background(Color(hex: "#003087"))
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .shadow(color: Color(hex: "#1976FF").opacity(0.35), radius: 12, x: 0, y: 6)
             }

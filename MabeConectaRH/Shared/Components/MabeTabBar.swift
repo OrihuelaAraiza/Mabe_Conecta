@@ -107,13 +107,7 @@ private struct FixedTabBarButton: View {
                 ZStack {
                     if isSelected {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color(hex: "#003087"), Color(hex: "#1976FF")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                            .fill(Color(hex: "#003087"))
                             .frame(width: 48, height: 28)
                             .matchedGeometryEffect(id: "tabPill", in: namespace)
                     }
@@ -151,7 +145,7 @@ private struct TabBarItem: View {
                 ZStack {
                     if isSelected {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(LinearGradient.mabeHero)
+                            .fill(Color.mabeBlue)
                             .frame(width: 52, height: 32)
                             .transition(.scale.combined(with: .opacity))
                     }

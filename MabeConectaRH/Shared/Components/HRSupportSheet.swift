@@ -36,7 +36,7 @@ struct HRSupportSheet: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
-                        .background(LinearGradient.mabeHero)
+                        .background(Color.mabeBlue)
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
 

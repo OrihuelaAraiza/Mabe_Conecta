@@ -33,7 +33,7 @@ struct MabePrimaryButton: View {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(usesLightBlue ? LinearGradient.mabeHeroSoft : LinearGradient.mabeHero)
+            .background(usesLightBlue ? Color.mabeElectric : Color.mabeBlue)
             .clipShape(RoundedRectangle(cornerRadius: MabeTheme.buttonRadius, style: .continuous))
             .opacity(isDisabled ? 0.5 : 1)
             .scaleEffect(isPressed ? 0.97 : 1)

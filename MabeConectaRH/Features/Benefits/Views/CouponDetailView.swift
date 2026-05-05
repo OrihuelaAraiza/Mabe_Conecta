@@ -136,7 +136,7 @@ struct CouponDetailView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(coupon.isUsable ? LinearGradient.mabeHero : LinearGradient(colors: [Color.mabeGray400], startPoint: .leading, endPoint: .trailing))
+                .background(coupon.isUsable ? Color.mabeBlue : Color.mabeGray400)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .disabled(!coupon.isUsable)
