@@ -7,6 +7,7 @@ import UIKit
 struct OnboardingView: View {
     @Environment(AppState.self) private var appState
     @Environment(UserPreferencesStore.self) private var preferencesStore
+    @Environment(RewardService.self) private var rewardService
     @State private var step = 0
     @State private var preferences = UserPreferences()
 
@@ -248,6 +249,10 @@ struct OnboardingView: View {
         preferences.notificacionesActivas = notifications
         preferences.onboardingCompletado = true
         preferencesStore.save(preferences)
+        rewardService.ganarPuntos(
+            tipo: .onboardingCompletado,
+            descripcion: "Onboarding completado"
+        )
         withAnimation(.easeInOut(duration: 0.25)) {
             appState.hasCompletedOnboarding = true
         }

@@ -5,6 +5,7 @@ struct BienestarView: View {
     @State private var showingCheckIn = false
     @State private var showSupport = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(RewardService.self) private var rewardService
 
     var body: some View {
         VStack(spacing: 0) {
@@ -16,7 +17,11 @@ struct BienestarView: View {
                         selectedMood: $vm.todayMood,
                         alreadyCheckedIn: vm.alreadyCheckedInToday,
                         onMoodSelected: { mood in
+                            let shouldAward = !vm.alreadyCheckedInToday
                             vm.registerMood(mood)
+                            if shouldAward {
+                                rewardService.registrarCheckinBienestar(moodLabel: mood.label)
+                            }
                             if mood == .dificil || mood == .cansado {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
                                     vm.showingSupportBanner = true
@@ -46,7 +51,11 @@ struct BienestarView: View {
         .background(Color(hex: "#F8F9FC"))
         .sheet(isPresented: $showingCheckIn) {
             CheckInGuiadoSheet { resultado in
+                let shouldAward = !vm.alreadyCheckedInToday
                 vm.saveCheckInResult(resultado)
+                if shouldAward {
+                    rewardService.registrarCheckinBienestar(moodLabel: resultado.mood.label)
+                }
                 showingCheckIn = false
             }
             .presentationDetents([.large])

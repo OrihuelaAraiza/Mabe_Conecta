@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ChatView: View {
     @Environment(AppState.self) private var appState
+    @Environment(RewardService.self) private var rewardService
     @State private var viewModel = ChatViewModel()
     @State private var showSupport = false
 
@@ -23,6 +24,7 @@ struct ChatView: View {
                                         message: mensaje,
                                         linkedPrestacion: viewModel.linkedPrestaciones[mensaje.id]
                                     ) { suggestion in
+                                        rewardService.registrarConsultaAsistenteSiNecesario()
                                         Task { await viewModel.enviar(suggestion) }
                                     }
                                     .id(mensaje.id)
@@ -51,6 +53,7 @@ struct ChatView: View {
                             .frame(maxHeight: 52)
 
                         Button {
+                            rewardService.registrarConsultaAsistenteSiNecesario()
                             Task { await viewModel.enviar() }
                         } label: {
                             Image(systemName: "arrow.up")

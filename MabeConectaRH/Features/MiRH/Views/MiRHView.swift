@@ -3,6 +3,7 @@ import SwiftUI
 struct MiRHView: View {
     @Environment(AppState.self) private var appState
     @Environment(UserPreferencesStore.self) private var preferencesStore
+    @Environment(RewardService.self) private var rewardService
     @State private var showingLogoutAlert = false
     @State private var showingOnboardingAlert = false
 
@@ -36,6 +37,17 @@ struct MiRHView: View {
                         PrestacionesView()
                     } label: {
                         MenuRow(icon: "gift.fill", title: "Mis Prestaciones", color: Color(hex: "#003087"))
+                    }
+
+                    NavigationLink {
+                        RecompensasView()
+                    } label: {
+                        MenuRow(
+                            icon: "star.fill",
+                            title: "Mis Recompensas",
+                            color: Color(hex: "#D97706"),
+                            badge: "\(rewardService.profile.puntosDisponibles) pts"
+                        )
                     }
                 }
 
@@ -81,6 +93,14 @@ struct MiRHView: View {
                             appState.toggleDemoRole()
                         } label: {
                             MenuRow(icon: "person.crop.circle.badge.checkmark", title: "Cambiar rol (Demo)", color: .mabeWarning)
+                        }
+                        .buttonStyle(.plain)
+
+                        Button {
+                            rewardService.resetToDemoProfile()
+                            appState.showToast("⭐ Recompensas demo restauradas")
+                        } label: {
+                            MenuRow(icon: "star.circle", title: "Reset recompensas demo", color: .mabeWarning)
                         }
                         .buttonStyle(.plain)
                     }
@@ -136,6 +156,7 @@ private struct MenuRow: View {
     let icon: String
     let title: String
     var color: Color = .mabeBlue
+    var badge: String?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -151,6 +172,16 @@ private struct MenuRow: View {
                 .foregroundStyle(color == .mabeDanger ? Color.mabeDanger : Color.mabeGray900)
 
             Spacer()
+
+            if let badge {
+                Text(badge)
+                    .font(.mabeLabelSm)
+                    .foregroundStyle(color)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(color.opacity(0.1))
+                    .clipShape(Capsule())
+            }
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.bold))

@@ -8,8 +8,6 @@ struct MabePrimaryButton: View {
     var isLoading = false
     let action: () -> Void
 
-    @State private var isPressed = false
-
     var body: some View {
         Button {
             guard !isDisabled else { return }
@@ -36,20 +34,14 @@ struct MabePrimaryButton: View {
             .background(usesLightBlue ? Color.mabeElectric : Color.mabeBlue)
             .clipShape(RoundedRectangle(cornerRadius: MabeTheme.buttonRadius, style: .continuous))
             .opacity(isDisabled ? 0.5 : 1)
-            .scaleEffect(isPressed ? 0.97 : 1)
-            .shadow(color: Color.mabeAccent.opacity(isPressed || isDisabled ? 0 : 0.22), radius: 14, x: 0, y: 6)
+            .shadow(color: Color.mabeAccent.opacity(isDisabled ? 0 : 0.22), radius: 14, x: 0, y: 6)
             .overlay {
                 RoundedRectangle(cornerRadius: MabeTheme.buttonRadius, style: .continuous)
                     .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.5)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(MabePressButtonStyle(scale: 0.97))
         .disabled(isDisabled)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { isPressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { isPressed = false } }
-        )
         .accessibilityLabel(title)
     }
 }

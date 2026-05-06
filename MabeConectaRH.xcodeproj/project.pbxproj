@@ -29,6 +29,9 @@
 		1B0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf */; };
 		1B0000000000000000000017 /* PlusJakartaSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000017 /* PlusJakartaSans-Bold.ttf */; };
 		1B0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf */; };
+		1B0000000000000000000019 /* Rewards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000019 /* Rewards.swift */; };
+		1B000000000000000000001A /* RewardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000000000000000001A /* RewardService.swift */; };
+		1B000000000000000000001B /* RecompensasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000000000000000001B /* RecompensasView.swift */; };
 		1A2B3C4D5E6F708192A3B4C5 /* MicroAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543210FEDCBA9876543210F /* MicroAnimations.swift */; };
 		1C721CC5377DB6975D12011F /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4651E529C4B40E8344248F /* ChatView.swift */; };
 		26A5D144F64AE05968C522A5 /* MabeLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D08DF3A9FAA5D70D3D4B2DD /* MabeLogoView.swift */; };
@@ -103,6 +106,9 @@
 		1A0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		1A0000000000000000000017 /* PlusJakartaSans-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-Bold.ttf"; sourceTree = "<group>"; };
 		1A0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-ExtraBold.ttf"; sourceTree = "<group>"; };
+		1A0000000000000000000019 /* Rewards.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Rewards.swift; sourceTree = "<group>"; };
+		1A000000000000000000001A /* RewardService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewardService.swift; sourceTree = "<group>"; };
+		1A000000000000000000001B /* RecompensasView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecompensasView.swift; sourceTree = "<group>"; };
 		2479229EB0111CF9F8FBAA7C /* MockDataService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MockDataService.swift; sourceTree = "<group>"; };
 		92A000000000000000000001 /* SessionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
 		256CCAE196AAB52F9C5375EE /* AppRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
@@ -226,6 +232,7 @@
 				9AA1BD7013D1B0172B59FB50 /* AIService.swift */,
 				0B9BC62448D85B0E50373D80 /* AuthService.swift */,
 				2479229EB0111CF9F8FBAA7C /* MockDataService.swift */,
+				1A000000000000000000001A /* RewardService.swift */,
 				92A000000000000000000001 /* SessionService.swift */,
 			);
 			path = Services;
@@ -266,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				B6F4BE52E58F64D6F5B78A8B /* MiRHView.swift */,
+				1A000000000000000000001B /* RecompensasView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -403,6 +411,7 @@
 				F9054CA25FF911C85CC92172 /* EstadoBienestar.swift */,
 				90ABCDEF1234567890ABCDEF /* HeroFeature.swift */,
 				1A0000000000000000000011 /* Prestacion.swift */,
+				1A0000000000000000000019 /* Rewards.swift */,
 				6C706E1BB35E88A536BB9A0E /* Solicitud.swift */,
 				2A475E6E59556DB972881D57 /* UserPreferences.swift */,
 			);
@@ -656,11 +665,13 @@
 				36EBABC524271047AE3D97D3 /* Empleado.swift in Sources */,
 				C6CCD2A194A426566BEF5635 /* EstadoBienestar.swift in Sources */,
 				7138E9A0B1C2D3E4F5061728 /* HeroFeature.swift in Sources */,
+				1B0000000000000000000019 /* Rewards.swift in Sources */,
 				70F87F5F1877F4D7681C78E2 /* Solicitud.swift in Sources */,
 				067D33826FFBEF38EBCF7DD4 /* UserPreferences.swift in Sources */,
 				511422146488AC58BB227C27 /* AIService.swift in Sources */,
 				4B83180723AAB3E9C27B5AF8 /* AuthService.swift in Sources */,
 				9101791BB2AC6026493A312A /* MockDataService.swift in Sources */,
+				1B000000000000000000001A /* RewardService.swift in Sources */,
 				91A000000000000000000001 /* SessionService.swift in Sources */,
 				4C78CC3648AF9C99D3165B00 /* LoginViewModel.swift in Sources */,
 				ED8287C18F2E11DA34A66D6E /* LoginView.swift in Sources */,
@@ -681,6 +692,7 @@
 				1B0000000000000000000006 /* PredictiveRecommendationsView.swift in Sources */,
 				B6C7D8E9F001122334455667 /* RHDashboardView.swift in Sources */,
 				28AFD9B5357E3198A582EC10 /* MiRHView.swift in Sources */,
+				1B000000000000000000001B /* RecompensasView.swift in Sources */,
 				0D31000E5827CC80394FB6D5 /* OnboardingView.swift in Sources */,
 				B4C5D6E7F8091A2B3C4D5E6F /* PerfilEmpleadoView.swift in Sources */,
 				3A115B748108807AD2FCCC25 /* SolicitudesViewModel.swift in Sources */,

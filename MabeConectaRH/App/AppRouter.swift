@@ -3,6 +3,7 @@ import SwiftUI
 struct AppRouter: View {
     @Environment(AppState.self) private var appState
     @Environment(UserPreferencesStore.self) private var preferencesStore
+    @Environment(RewardService.self) private var rewardService
     @State private var hasShownDemoToast = false
 
     var body: some View {
@@ -27,6 +28,13 @@ struct AppRouter: View {
                     .padding(.top, 12)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
+
+            if let evento = rewardService.eventoReciente {
+                PuntosToast(evento: evento)
+                    .padding(.top, safeAreaTop + 8)
+                    .zIndex(999)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
         }
         .onChange(of: appState.flowHash) {
             scheduleDemoToastIfNeeded()
@@ -35,6 +43,12 @@ struct AppRouter: View {
             appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
             scheduleDemoToastIfNeeded()
         }
+    }
+
+    private var safeAreaTop: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?.windows.first?.safeAreaInsets.top ?? 0
     }
 
     private func scheduleDemoToastIfNeeded() {

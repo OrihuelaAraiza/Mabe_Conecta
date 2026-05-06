@@ -297,6 +297,7 @@ private struct HeroCard: View {
     let feature: HeroFeature
     let empleado: Empleado
     let isCurrent: Bool
+    @Environment(RewardService.self) private var rewardService
 
     @State private var appeared = false
     @State private var particle1Offset: CGSize = .zero
@@ -369,6 +370,19 @@ private struct HeroCard: View {
                     Spacer()
 
                     HStack(spacing: 8) {
+                        if rewardService.profile.tier >= .oro {
+                            HStack(spacing: 4) {
+                                Text(rewardService.profile.tier.emoji)
+                                    .font(.system(size: 11))
+                                Text(rewardService.profile.tier.nombre)
+                                    .font(.mabeLabelSm)
+                            }
+                            .foregroundColor(rewardService.profile.tier.color)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 5)
+                            .background(rewardService.profile.tier.backgroundColor.opacity(0.92))
+                            .clipShape(Capsule())
+                        }
                         notificationButton
                         avatarButton
                     }

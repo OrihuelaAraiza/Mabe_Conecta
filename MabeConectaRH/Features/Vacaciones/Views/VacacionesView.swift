@@ -605,6 +605,7 @@ private struct SolicitudVacacionesFlow: View {
     let empleado: Empleado
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(RewardService.self) private var rewardService
     @State private var step = 0
     @State private var motivo = ""
     @State private var tipoMotivo: MotivoVacacion = .descanso
@@ -836,6 +837,10 @@ private struct SolicitudVacacionesFlow: View {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             isLoading = false
+            rewardService.ganarPuntos(
+                tipo: .solicitudCompletada,
+                descripcion: "Solicitud de vacaciones enviada"
+            )
             withAnimation(.spring(response: 0.5)) {
                 step = 2
                 showConfetti = true

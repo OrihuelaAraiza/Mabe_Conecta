@@ -162,6 +162,50 @@ struct MockDataService {
         }
     }()
 
+    static let rewardProfileDemo: RewardProfile = {
+        let calendar = Calendar.current
+        let eventos = [
+            RewardEvent(
+                id: UUID(),
+                tipo: .evaluacionCuatrimestral,
+                puntos: 300,
+                puntosFinales: 300,
+                descripcion: "Evaluación Buena (82%) — Q2/2025",
+                fecha: calendar.date(byAdding: .day, value: -14, to: Date()) ?? Date(),
+                fuente: .desempeno
+            ),
+            RewardEvent(
+                id: UUID(),
+                tipo: .rachaSemanal,
+                puntos: 50,
+                puntosFinales: 63,
+                descripcion: "Racha de 7 días",
+                fecha: calendar.date(byAdding: .day, value: -3, to: Date()) ?? Date(),
+                fuente: .app
+            ),
+            RewardEvent(
+                id: UUID(),
+                tipo: .checkinBienestar,
+                puntos: 10,
+                puntosFinales: 13,
+                descripcion: "Check-in de bienestar — Bien",
+                fecha: Date(),
+                fuente: .app
+            )
+        ]
+
+        return RewardProfile(
+            puntosAcumulados: 720,
+            puntosDisponibles: 540,
+            tier: .plata,
+            eventos: eventos,
+            logrosDesbloqueados: ["primer_paso", "nivel_plata", "primer_cuatrimestre"],
+            rachaActual: 8,
+            cuatrimestresConBono: 1,
+            fechaUltimoCheckin: Date()
+        )
+    }()
+
     static let prestaciones: [Prestacion] = [
         Prestacion(
             id: "aguinaldo",

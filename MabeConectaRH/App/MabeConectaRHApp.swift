@@ -4,6 +4,7 @@ import SwiftUI
 struct MabeConectaRHApp: App {
     @State private var appState = AppState()
     @State private var preferencesStore = UserPreferencesStore()
+    @State private var rewardService = RewardService()
 
     init() {
         MabeFontLoader.registerFonts()
@@ -16,6 +17,7 @@ struct MabeConectaRHApp: App {
                 .tint(.mabeBlue)
                 .environment(appState)
                 .environment(preferencesStore)
+                .environment(rewardService)
                 .onAppear {
                     appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
                 }

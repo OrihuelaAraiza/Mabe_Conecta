@@ -58,7 +58,6 @@ struct MabeActionCard: View {
     let subtitle: String
     let accentColor: Color
     let destination: AnyView
-    @State private var pressed = false
 
     var body: some View {
         NavigationLink(destination: destination) {
@@ -89,17 +88,20 @@ struct MabeActionCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(pressed ? accentColor.opacity(0.3) : Color.mabeBorder1, lineWidth: pressed ? 1 : 0.5)
+                    .strokeBorder(Color.mabeBorder1, lineWidth: 0.5)
             }
-            .shadow(color: accentColor.opacity(pressed ? 0.12 : 0.07), radius: 12, x: 0, y: 3)
-            .scaleEffect(pressed ? 0.97 : 1.0)
+            .shadow(color: accentColor.opacity(0.07), radius: 12, x: 0, y: 3)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
-        )
-        .animation(.spring(response: 0.25), value: pressed)
+        .buttonStyle(MabePressButtonStyle(scale: 0.97))
+    }
+}
+
+struct MabePressButtonStyle: ButtonStyle {
+    var scale: CGFloat = 0.97
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.82), value: configuration.isPressed)
     }
 }

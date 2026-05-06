@@ -11,6 +11,7 @@ struct CuponesView: View {
     @State private var confettiCounter = 0
     @State private var isLoadingCoupons = true
     @Environment(\.dismiss) private var dismiss
+    @Environment(RewardService.self) private var rewardService
 
     private var cuponesFiltrados: [Cupon] {
         selectedCategory == .todos
@@ -79,6 +80,11 @@ struct CuponesView: View {
                     isRedeemed: redeemedCoupons.contains(selectedCoupon.id),
                     onRedeem: {
                         redeemedCoupons.insert(selectedCoupon.id)
+                        rewardService.ganarPuntos(
+                            tipo: .cuponCanjeado,
+                            descripcion: "Cupón canjeado: \(selectedCoupon.titulo)"
+                        )
+                        rewardService.canjearPuntos(selectedCoupon.puntosCosto)
                         showingRedeemSheet = false
                         confettiCounter += 1
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -148,7 +154,7 @@ struct CuponesView: View {
                 Image(systemName: "star.fill")
                     .font(.system(size: 12))
                     .foregroundColor(Color(hex: "#D97706"))
-                Text("320 pts")
+                Text("\(rewardService.profile.puntosDisponibles) pts")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(hex: "#D97706"))
             }

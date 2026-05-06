@@ -266,7 +266,6 @@ private struct PrestacionesGrid: View {
 private struct PrestacionCard: View {
     let prestacion: Prestacion
     let onTap: () -> Void
-    @State private var pressed = false
 
     private var isWide: Bool { prestacion.esDestacada }
 
@@ -342,14 +341,8 @@ private struct PrestacionCard: View {
                     .strokeBorder(Color(hex: "#DDE3F0"), lineWidth: 0.5)
             }
             .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 8, x: 0, y: 2)
-            .scaleEffect(pressed ? 0.97 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
-        )
+        .buttonStyle(MabePressButtonStyle(scale: 0.97))
     }
 
     private var iconView: some View {
