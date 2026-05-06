@@ -46,7 +46,7 @@ enum AuthError: LocalizedError {
 }
 
 enum BackendConfig {
-    static let baseURL = URL(string: "http://localhost:4000")!
+    static let baseURL = URL(string: "https://hackly-nonsynchronical-waylon.ngrok-free.dev")!
 }
 
 enum BackendError: LocalizedError {
@@ -86,7 +86,7 @@ struct BackendAPI {
         return response.data
     }
 
-    func chat(prompt: String, sessionID: String?, authToken: String) async throws -> AgentChatData {
+    func chat(prompt: String, sessionID: String?, authToken: String?) async throws -> AgentChatData {
         let body = AgentChatRequest(prompt: prompt, session_id: sessionID)
         let response: Envelope<AgentChatData> = try await send(
             path: "/api/agent/chat", method: "POST", body: body, authToken: authToken)
@@ -207,6 +207,7 @@ struct BackendAPI {
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("true", forHTTPHeaderField: "ngrok-skip-browser-warning")
 
         if let authToken {
             request.setValue(authToken, forHTTPHeaderField: "x-auth")

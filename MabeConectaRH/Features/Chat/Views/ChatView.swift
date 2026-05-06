@@ -10,6 +10,7 @@ struct ChatView: View {
     @State private var showBienestar = false
     @State private var showBenefits = false
     @State private var showNotifications = false
+    @State private var isKeyboardVisible = false
 
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -45,8 +46,18 @@ struct ChatView: View {
                             .padding(.horizontal, MabeTheme.horizontalPadding)
                             .padding(.vertical, 16)
                         }
+                        .contentShape(Rectangle())
                         .background(Color.mabeBackground)
                         .scrollDismissesKeyboard(.interactively)
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 12)
+                                .onChanged { _ in
+                                    dismissKeyboard()
+                                }
+                        )
+                        .onTapGesture {
+                            dismissKeyboard()
+                        }
                         .onChange(of: viewModel.mensajes.count) {
                             scrollToBottom(proxy)
                         }
@@ -97,7 +108,7 @@ struct ChatView: View {
                     }
                     .padding(.horizontal, MabeTheme.horizontalPadding)
                     .padding(.vertical, 12)
-                    .padding(.bottom, 88)
+                    .padding(.bottom, isKeyboardVisible ? 8 : 88)
                     .background {
                         Color.mabeBackground
                             .ignoresSafeArea(edges: .bottom)
@@ -111,9 +122,28 @@ struct ChatView: View {
             }
         }
         .mabeNavigationBarTitleDisplayMode(.inline)
-        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Listo") {
+                    dismissKeyboard()
+                }
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Color.mabeBlue)
+            }
+        }
         .onAppear {
             consumePendingPromptIfNeeded()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            withAnimation(.easeOut(duration: 0.22)) {
+                isKeyboardVisible = true
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            withAnimation(.easeOut(duration: 0.22)) {
+                isKeyboardVisible = false
+            }
         }
         .onChange(of: appState.pendingChatPrompt) {
             consumePendingPromptIfNeeded()
@@ -184,6 +214,15 @@ struct ChatView: View {
     private func consumePendingPromptIfNeeded() {
         guard let prompt = appState.consumePendingChatPrompt(), !prompt.isEmpty else { return }
         viewModel.textoActual = prompt
+    }
+
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
     }
 
     private func handleQuickAction(_ action: ChatQuickAction) {

@@ -29,10 +29,10 @@ final class ChatViewModel {
         persistMessages()
         isTyping = true
 
-        if let session = SessionService.load(), let authToken = session.authToken {
+        if let session = SessionService.load() {
             do {
                 let response = try await api.chat(
-                    prompt: texto, sessionID: session.chatSessionId, authToken: authToken)
+                    prompt: texto, sessionID: session.chatSessionId, authToken: session.authToken)
                 SessionService.saveChatSessionId(response.session_id)
 
                 let assistantMessage = ChatMessage(
