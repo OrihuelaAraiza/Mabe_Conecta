@@ -32,4 +32,12 @@ final class LoginViewModel {
     func loginDemo() -> Empleado {
         authService.loginDemo()
     }
+
+    func loginDemoEmpleado() -> Empleado {
+        MockDataService.empleadoActual
+    }
+
+    func loginDemoRH() -> Empleado {
+        MockDataService.agenteRH
+    }
 }

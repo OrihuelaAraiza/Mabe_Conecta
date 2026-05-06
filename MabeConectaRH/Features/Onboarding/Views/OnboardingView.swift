@@ -28,29 +28,34 @@ struct OnboardingView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            TabView(selection: $step) {
-                welcomeStep.tag(0)
-                interestsStep.tag(1)
-                widgetsStep.tag(2)
-                notificationsStep.tag(3)
-            }
-            .mabeOnboardingPageStyle()
+        ZStack {
+            Color.mabeBackground.ignoresSafeArea()
+            MabeIndustrialPattern(opacity: 0.035, color: .mabePrimary)
+                .ignoresSafeArea()
 
-            OnboardingDots(step: step, count: 4)
-                .padding(.bottom, 18)
-
-            if step < 3 {
-                MabePrimaryButton(title: "Continuar") {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        step += 1
-                    }
+            VStack(spacing: 0) {
+                TabView(selection: $step) {
+                    welcomeStep.tag(0)
+                    interestsStep.tag(1)
+                    widgetsStep.tag(2)
+                    notificationsStep.tag(3)
                 }
-                .padding(.horizontal, MabeTheme.horizontalPadding)
-                .padding(.bottom, 24)
+                .mabeOnboardingPageStyle()
+
+                OnboardingDots(step: step, count: 4)
+                    .padding(.bottom, 18)
+
+                if step < 3 {
+                    MabePrimaryButton(title: "Continuar") {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            step += 1
+                        }
+                    }
+                    .padding(.horizontal, MabeTheme.horizontalPadding)
+                    .padding(.bottom, 24)
+                }
             }
         }
-        .background(Color.mabeBackground)
         .onAppear {
             preferences = preferencesStore.preferences
             configurePageControl()

@@ -12,6 +12,8 @@ struct LoginView: View {
 
         ZStack {
             Color.mabeBackground.ignoresSafeArea()
+            MabeIndustrialPattern(opacity: 0.035, color: .mabePrimary)
+                .ignoresSafeArea()
 
             Ellipse()
                 .fill(LinearGradient.mabeHero)
@@ -97,6 +99,7 @@ struct LoginView: View {
                         ) {
                             Task {
                                 if let result = await viewModel.login() {
+                                    MabeHaptics.shared.loginSuccess()
                                     appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
                                     appState.signIn(user: result.0, role: result.1, isDemo: false)
                                 }
@@ -109,6 +112,8 @@ struct LoginView: View {
                             .foregroundStyle(Color.mabeLightBlue)
                             .frame(minHeight: 40)
                             .accessibilityLabel("Olvidaste tu NIP, contacta a RH")
+
+                        demoAccessSection
                     }
                     .frame(maxWidth: 360)
                     .padding(.horizontal, MabeTheme.horizontalPadding)
@@ -131,23 +136,6 @@ struct LoginView: View {
                 .frame(minHeight: 620)
             }
 
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button("Demo") {
-                        let empleado = viewModel.loginDemo()
-                        appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
-                        appState.signIn(user: empleado, role: .empleado, isDemo: true)
-                    }
-                    .font(.mabeCaption)
-                    .foregroundStyle(Color.mabeGray400)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .padding(.trailing, 18)
-                    .padding(.bottom, 18)
-                    .accessibilityLabel("Entrar en modo demo")
-                }
-            }
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.errorMessage)
         .animation(.easeInOut(duration: 0.3), value: isRHMode)
@@ -160,6 +148,92 @@ struct LoginView: View {
                 didAppear = true
             }
         }
+    }
+
+    private var demoAccessSection: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 8) {
+                Rectangle()
+                    .fill(Color.mabeGray200)
+                    .frame(height: 1)
+                Text("Modo demo")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.mabeGray500)
+                    .textCase(.uppercase)
+                    .tracking(0.8)
+                Rectangle()
+                    .fill(Color.mabeGray200)
+                    .frame(height: 1)
+            }
+            .padding(.top, 4)
+
+            HStack(spacing: 10) {
+                demoButton(
+                    title: "Empleado",
+                    subtitle: "Colaborador",
+                    icon: "person.fill",
+                    color: Color.mabeBlue
+                ) {
+                    signInDemo(user: viewModel.loginDemoEmpleado(), role: .empleado)
+                }
+
+                demoButton(
+                    title: "RH",
+                    subtitle: "Administrador",
+                    icon: "shield.checkered",
+                    color: Color(hex: "#D97706")
+                ) {
+                    signInDemo(user: viewModel.loginDemoRH(), role: .agenteRH)
+                }
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    private func demoButton(
+        title: String,
+        subtitle: String,
+        icon: String,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(color)
+                    .frame(width: 32, height: 32)
+                    .background(color.opacity(0.1))
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Color.mabeGray900)
+                    Text(subtitle)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(Color.mabeGray500)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity)
+            .background(Color.mabeSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(color.opacity(0.16), lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Entrar en modo demo como \(title)")
+    }
+
+    private func signInDemo(user: Empleado, role: UserRole) {
+        MabeHaptics.shared.loginSuccess()
+        appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
+        appState.signIn(user: user, role: role, isDemo: true)
     }
 }
 

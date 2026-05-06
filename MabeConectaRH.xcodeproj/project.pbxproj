@@ -22,6 +22,13 @@
 		1B0000000000000000000009 /* CuponesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000009 /* CuponesView.swift */; };
 		1B0000000000000000000010 /* PrestacionesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000010 /* PrestacionesView.swift */; };
 		1B0000000000000000000011 /* Prestacion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000011 /* Prestacion.swift */; };
+		1B0000000000000000000012 /* MabeFontLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000012 /* MabeFontLoader.swift */; };
+		1B0000000000000000000013 /* MabeIndustrialPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000013 /* MabeIndustrialPattern.swift */; };
+		1B0000000000000000000014 /* PlusJakartaSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000014 /* PlusJakartaSans-Regular.ttf */; };
+		1B0000000000000000000015 /* PlusJakartaSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000015 /* PlusJakartaSans-Medium.ttf */; };
+		1B0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf */; };
+		1B0000000000000000000017 /* PlusJakartaSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000017 /* PlusJakartaSans-Bold.ttf */; };
+		1B0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf */; };
 		1A2B3C4D5E6F708192A3B4C5 /* MicroAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543210FEDCBA9876543210F /* MicroAnimations.swift */; };
 		1C721CC5377DB6975D12011F /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4651E529C4B40E8344248F /* ChatView.swift */; };
 		26A5D144F64AE05968C522A5 /* MabeLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D08DF3A9FAA5D70D3D4B2DD /* MabeLogoView.swift */; };
@@ -89,6 +96,13 @@
 		1A0000000000000000000009 /* CuponesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CuponesView.swift; sourceTree = "<group>"; };
 		1A0000000000000000000010 /* PrestacionesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrestacionesView.swift; sourceTree = "<group>"; };
 		1A0000000000000000000011 /* Prestacion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Prestacion.swift; sourceTree = "<group>"; };
+		1A0000000000000000000012 /* MabeFontLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeFontLoader.swift; sourceTree = "<group>"; };
+		1A0000000000000000000013 /* MabeIndustrialPattern.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MabeIndustrialPattern.swift; sourceTree = "<group>"; };
+		1A0000000000000000000014 /* PlusJakartaSans-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-Regular.ttf"; sourceTree = "<group>"; };
+		1A0000000000000000000015 /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
+		1A0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		1A0000000000000000000017 /* PlusJakartaSans-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-Bold.ttf"; sourceTree = "<group>"; };
+		1A0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "PlusJakartaSans-ExtraBold.ttf"; sourceTree = "<group>"; };
 		2479229EB0111CF9F8FBAA7C /* MockDataService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MockDataService.swift; sourceTree = "<group>"; };
 		92A000000000000000000001 /* SessionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
 		256CCAE196AAB52F9C5375EE /* AppRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
@@ -172,9 +186,30 @@
 			children = (
 				3B06424D2D3BAF5221782409 /* Components */,
 				6B0A85CE6FBF76798F905380 /* Extensions */,
+				1C0000000000000000000012 /* Resources */,
 				C2E0824FDA6CAB479FC226E9 /* Theme */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		1C0000000000000000000012 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1C0000000000000000000013 /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1C0000000000000000000013 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000000000000000000014 /* PlusJakartaSans-Regular.ttf */,
+				1A0000000000000000000015 /* PlusJakartaSans-Medium.ttf */,
+				1A0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf */,
+				1A0000000000000000000017 /* PlusJakartaSans-Bold.ttf */,
+				1A0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		2512B2DCC768F040D0C5BC69 /* ViewModels */ = {
@@ -206,6 +241,7 @@
 				17E109F92AB0F65D13CCB7F3 /* MabeChip.swift */,
 				C82288BB8FBCE63BB5914A79 /* MabeGlassCard.swift */,
 				8D08DF3A9FAA5D70D3D4B2DD /* MabeLogoView.swift */,
+				1A0000000000000000000013 /* MabeIndustrialPattern.swift */,
 				F79D0697513A3AB14EEA31F5 /* MabePrimaryButton.swift */,
 				6543210FEDCBA9876543210F /* MicroAnimations.swift */,
 				70C280BF577C1773BB523D1E /* MabeStatusBadge.swift */,
@@ -417,6 +453,7 @@
 		C2E0824FDA6CAB479FC226E9 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				1A0000000000000000000012 /* MabeFontLoader.swift */,
 				8D38F90820432E741DBDDF6A /* MabeTheme.swift */,
 			);
 			path = Theme;
@@ -594,6 +631,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B0000000000000000000014 /* PlusJakartaSans-Regular.ttf in Resources */,
+				1B0000000000000000000015 /* PlusJakartaSans-Medium.ttf in Resources */,
+				1B0000000000000000000016 /* PlusJakartaSans-SemiBold.ttf in Resources */,
+				1B0000000000000000000017 /* PlusJakartaSans-Bold.ttf in Resources */,
+				1B0000000000000000000018 /* PlusJakartaSans-ExtraBold.ttf in Resources */,
 				89E3238B4B6B54F86D7B36D6 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -651,6 +693,7 @@
 				733FF27E56B4228843B8A4C9 /* MabeChip.swift in Sources */,
 				1417D7C5E96FD1AE898B1487 /* MabeGlassCard.swift in Sources */,
 				26A5D144F64AE05968C522A5 /* MabeLogoView.swift in Sources */,
+				1B0000000000000000000013 /* MabeIndustrialPattern.swift in Sources */,
 				7A0ACDF3E5CA6F86DB251053 /* MabePrimaryButton.swift in Sources */,
 				1B0000000000000000000008 /* HRSupportSheet.swift in Sources */,
 				1A2B3C4D5E6F708192A3B4C5 /* MicroAnimations.swift in Sources */,
@@ -663,6 +706,7 @@
 				5D36A5441D1413D05309A4A8 /* Date+Display.swift in Sources */,
 				ED3C6B3ACCFBA7A2C85B879A /* Haptics.swift in Sources */,
 				7BFB0D29128CEC33CE3F0D2D /* View+Navigation.swift in Sources */,
+				1B0000000000000000000012 /* MabeFontLoader.swift in Sources */,
 				32B2BB43DEF4270488E86B90 /* MabeTheme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

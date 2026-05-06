@@ -308,6 +308,9 @@ private struct HeroCard: View {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(feature.gradient)
 
+            MabeIndustrialPattern(opacity: 0.075, color: .white)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+
             Circle()
                 .fill(.white.opacity(0.07))
                 .frame(width: 160, height: 160)
@@ -354,11 +357,11 @@ private struct HeroCard: View {
                 HStack(alignment: .center, spacing: 0) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(saludo())
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.mabeLabelMd)
                             .foregroundColor(.white.opacity(0.75))
                             .fixedSize()
                         Text(empleado.nombre)
-                            .font(.system(size: 17, weight: .bold, design: .rounded))
+                            .font(.mabeH3)
                             .foregroundColor(.white)
                             .fixedSize()
                     }
@@ -453,18 +456,18 @@ private struct HeroCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .lastTextBaseline, spacing: 3) {
                     Text(feature.valorPrincipal(empleado))
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.mabeDisplaySm)
                         .foregroundColor(.white)
                         .contentTransition(.numericText())
                     if !feature.unidad.isEmpty {
                         Text(feature.unidad)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.mabeLabelMd)
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
 
                 Text(feature.contextoTemporal)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.mabeLabelSm)
                     .foregroundColor(.white.opacity(0.65))
                     .lineLimit(1)
                     .fixedSize(horizontal: false, vertical: true)

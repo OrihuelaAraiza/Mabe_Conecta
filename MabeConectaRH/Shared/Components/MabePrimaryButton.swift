@@ -37,7 +37,11 @@ struct MabePrimaryButton: View {
             .clipShape(RoundedRectangle(cornerRadius: MabeTheme.buttonRadius, style: .continuous))
             .opacity(isDisabled ? 0.5 : 1)
             .scaleEffect(isPressed ? 0.97 : 1)
-            .shadow(color: Color.mabeElectric.opacity(isPressed || isDisabled ? 0 : 0.35), radius: 12, x: 0, y: 6)
+            .shadow(color: Color.mabeAccent.opacity(isPressed || isDisabled ? 0 : 0.22), radius: 14, x: 0, y: 6)
+            .overlay {
+                RoundedRectangle(cornerRadius: MabeTheme.buttonRadius, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.5)
+            }
         }
         .buttonStyle(.plain)
         .disabled(isDisabled)

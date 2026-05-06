@@ -45,7 +45,7 @@ struct MabeTabBar: View {
                 TabBarItem(tab: tab, isSelected: selectedTab == tab) {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedTab = tab
-                        Haptics.impact(.light)
+                        MabeHaptics.shared.tabChange()
                     }
                 }
             }
@@ -54,7 +54,7 @@ struct MabeTabBar: View {
         .padding(.vertical, 10)
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: Color.mabeGray900.opacity(0.12), radius: 24, x: 0, y: 8)
+        .shadow(color: Color.mabePrimary.opacity(0.12), radius: 24, x: 0, y: 8)
         .padding(.horizontal, 24)
         .padding(.bottom, 16)
     }
@@ -75,7 +75,7 @@ struct AppTabBar: View {
                 ) {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedIndex = index
-                        Haptics.impact(.light)
+                        MabeHaptics.shared.tabChange()
                     }
                 }
             }
@@ -88,9 +88,9 @@ struct AppTabBar: View {
         .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.65), lineWidth: 1)
+                .strokeBorder(Color.mabeBorder1, lineWidth: 0.5)
         }
-        .shadow(color: Color(hex: "#0D1B3E").opacity(0.1), radius: 20, x: 0, y: -6)
+        .shadow(color: Color.mabePrimary.opacity(0.12), radius: 24, x: 0, y: -8)
         .padding(.horizontal, 20)
     }
 }
@@ -108,20 +108,20 @@ private struct FixedTabBarButton: View {
                     if isSelected {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color(hex: "#003087"))
-                            .frame(width: 48, height: 28)
+                            .frame(width: 50, height: 30)
                             .matchedGeometryEffect(id: "tabPill", in: namespace)
                     }
 
                     Image(systemName: isSelected ? tab.iconFilled : tab.icon)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(isSelected ? Color.white : Color(hex: "#9AA5BE"))
+                        .foregroundStyle(isSelected ? Color.white : Color.mabeText3)
                         .animation(.none, value: isSelected)
                 }
                 .frame(height: 28)
 
                 Text(tab.title)
-                    .font(.system(size: 10, weight: isSelected ? .semibold : .medium))
-                    .foregroundStyle(isSelected ? Color(hex: "#003087") : Color(hex: "#9AA5BE"))
+                    .font(.mabeLabelSm)
+                    .foregroundStyle(isSelected ? Color.mabePrimary : Color.mabeText3)
                     .frame(height: 14)
                     .animation(.none, value: isSelected)
             }

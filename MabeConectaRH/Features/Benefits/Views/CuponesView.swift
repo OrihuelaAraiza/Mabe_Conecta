@@ -289,7 +289,6 @@ private struct CuponCard: View {
     let cupon: Cupon
     let isRedeemed: Bool
     let onTap: () -> Void
-    @State private var pressed = false
 
     var body: some View {
         Button(action: onTap) {
@@ -368,14 +367,8 @@ private struct CuponCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: Color(hex: "#0D1B3E").opacity(isRedeemed ? 0.03 : 0.07), radius: 10, x: 0, y: 3)
             .opacity(isRedeemed ? 0.65 : 1.0)
-            .scaleEffect(pressed ? 0.97 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
-        )
+        .buttonStyle(ScrollFriendlyPressButtonStyle(scale: 0.97))
         .animation(.spring(response: 0.3), value: isRedeemed)
     }
 }
@@ -440,7 +433,6 @@ private struct PhysicalCouponCard: View {
     let onTap: () -> Void
 
     @State private var shimmerPhase: CGFloat = 0
-    @State private var pressed = false
 
     var body: some View {
         Button(action: onTap) {
@@ -578,14 +570,18 @@ private struct PhysicalCouponCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 190)
             .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .scaleEffect(pressed ? 0.96 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
-        )
+        .buttonStyle(ScrollFriendlyPressButtonStyle(scale: 0.96))
+    }
+}
+
+private struct ScrollFriendlyPressButtonStyle: ButtonStyle {
+    let scale: CGFloat
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.82), value: configuration.isPressed)
     }
 }
 

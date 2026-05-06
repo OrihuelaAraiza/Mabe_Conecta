@@ -48,15 +48,15 @@ struct MabeTextField: View {
         .padding(.leading, 14)
         .padding(.trailing, isSecure ? 4 : 14)
         .frame(minHeight: 48)
-        .background(Color.mabeSurface)
+        .background(Color.mabeSurface1)
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(highlightColor ?? (isFocused ? Color.mabeElectric : Color.mabeGray200), lineWidth: highlightColor == nil ? (isFocused ? 2 : 1) : 2)
+                .stroke(highlightColor ?? (isFocused ? Color.mabeBorder2 : Color.mabeBorder1), lineWidth: highlightColor == nil ? (isFocused ? 1.5 : 0.5) : 1.5)
                 .animation(.easeInOut(duration: 0.2), value: isFocused)
                 .animation(.easeInOut(duration: 0.2), value: highlightColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .shadow(color: Color.mabeGray900.opacity(isFocused ? 0.08 : 0.03), radius: isFocused ? 12 : 6, x: 0, y: 3)
+        .shadow(color: Color.mabePrimary.opacity(isFocused ? 0.08 : 0.03), radius: isFocused ? 12 : 6, x: 0, y: 3)
     }
 }
 
