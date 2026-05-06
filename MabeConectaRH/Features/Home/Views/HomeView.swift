@@ -624,7 +624,6 @@ private struct PreferenceOrderRow: View {
 private struct QuickAccessCard: View {
     let item: QuickAccessItem
     let action: () -> Void
-    @State private var isPressed = false
 
     var body: some View {
         Button {
@@ -657,14 +656,8 @@ private struct QuickAccessCard: View {
             .background(Color.mabeSurface)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: Color.mabeGray900.opacity(0.06), radius: 12, x: 0, y: 4)
-            .scaleEffect(isPressed ? 0.96 : 1)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { isPressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { isPressed = false } }
-        )
+        .buttonStyle(MabePressButtonStyle(scale: 0.96))
         .accessibilityLabel(item.titulo)
     }
 }
@@ -675,7 +668,6 @@ private struct CompactActionCard: View {
     let badge: String?
     let badgeColor: Color
     let action: () -> Void
-    @State private var pressed = false
 
     var body: some View {
         Button {
@@ -709,14 +701,8 @@ private struct CompactActionCard: View {
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .shadow(color: Color(hex: "#0D1B3E").opacity(0.06), radius: 10, x: 0, y: 3)
-            .scaleEffect(pressed ? 0.96 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
-        )
+        .buttonStyle(MabePressButtonStyle(scale: 0.96))
     }
 }
 

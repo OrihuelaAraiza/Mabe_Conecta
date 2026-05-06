@@ -949,7 +949,6 @@ struct RecursosSection: View {
 struct RecursoRow: View {
     let recurso: RecursoBienestar
     let onContactRH: () -> Void
-    @State private var pressed = false
 
     var body: some View {
         Button {
@@ -1005,14 +1004,8 @@ struct RecursoRow: View {
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 8, x: 0, y: 2)
-            .scaleEffect(pressed ? 0.98 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in withAnimation(.spring(response: 0.2)) { pressed = true } }
-                .onEnded { _ in withAnimation(.spring(response: 0.3)) { pressed = false } }
-        )
+        .buttonStyle(MabePressButtonStyle(scale: 0.98))
     }
 }
 
