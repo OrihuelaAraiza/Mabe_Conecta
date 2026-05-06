@@ -4,6 +4,8 @@ struct VacacionesView: View {
     @State private var viewModel: VacacionesViewModel
     @State private var startDate: Date?
     @State private var endDate: Date?
+    @State private var motivoSeleccionado: MotivoVacacion?
+    @State private var showingMotivoQuickPick = false
     @Environment(\.dismiss) private var dismiss
 
     init(empleado: Empleado) {
@@ -28,17 +30,50 @@ struct VacacionesView: View {
                     MabeCalendar(
                         startDate: $startDate,
                         endDate: $endDate,
-                        onRangeSelected: { _, _ in
-                            UINotificationFeedbackGenerator().notificationOccurred(.success)
+                        onRangeSelected: { _, selectedEndDate in
+                            if selectedEndDate == nil {
+                                motivoSeleccionado = nil
+                                showingMotivoQuickPick = false
+                            } else {
+                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                if motivoSeleccionado == nil {
+                                    withAnimation(.spring(response: 0.4)) {
+                                        showingMotivoQuickPick = true
+                                    }
+                                }
+                            }
                         }
                     )
                     .padding(.horizontal, 20)
 
-                    if startDate != nil {
-                        BeachSceneView(diasHabiles: diasHabiles, hasFullRange: endDate != nil)
-                            .frame(height: 140)
+                    if showingMotivoQuickPick || motivoSeleccionado != nil {
+                        MotivoQuickPick(
+                            selected: $motivoSeleccionado,
+                            onSelect: {
+                                withAnimation(.spring(response: 0.4)) {
+                                    showingMotivoQuickPick = false
+                                }
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+
+                    if let motivo = motivoSeleccionado, endDate != nil {
+                        MotivacionSceneView(motivo: motivo, diasHabiles: diasHabiles, hasFullRange: endDate != nil)
+                            .frame(height: 150)
                             .padding(.horizontal, 20)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                            .transition(.scale(scale: 0.92).combined(with: .opacity))
+                    } else if startDate != nil && endDate != nil {
+                        HStack(spacing: 8) {
+                            Image(systemName: "hand.tap.fill")
+                                .foregroundColor(Color(hex: "#9AA5BE"))
+                            Text("Elige un motivo para ver tu escena de vacaciones")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(Color(hex: "#9AA5BE"))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
                     }
 
                     if let startDate {
@@ -47,7 +82,16 @@ struct VacacionesView: View {
                             endDate: endDate,
                             diasHabiles: diasHabiles,
                             empleado: viewModel.empleado,
-                            onContinue: { viewModel.showingSheet = true }
+                            onContinue: {
+                                guard motivoSeleccionado != nil else {
+                                    withAnimation(.spring(response: 0.4)) {
+                                        showingMotivoQuickPick = true
+                                    }
+                                    Haptics.impact(.light)
+                                    return
+                                }
+                                viewModel.showingSheet = true
+                            }
                         )
                         .padding(.horizontal, 20)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -67,7 +111,8 @@ struct VacacionesView: View {
                 startDate: startDate,
                 endDate: endDate,
                 diasHabiles: diasHabiles,
-                empleado: viewModel.empleado
+                empleado: viewModel.empleado,
+                motivoPreseleccionado: motivoSeleccionado
             )
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
@@ -323,6 +368,7 @@ private struct MabeCalendar: View {
                 } else if calendar.isDate(date, inSameDayAs: startDate) {
                     self.startDate = nil
                     self.endDate = nil
+                    onRangeSelected?(date, nil)
                 } else {
                     endDate = date
                     onRangeSelected?(startDate, date)
@@ -603,14 +649,30 @@ private struct SolicitudVacacionesFlow: View {
     let endDate: Date?
     let diasHabiles: Int
     let empleado: Empleado
+    let motivoPreseleccionado: MotivoVacacion?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(RewardService.self) private var rewardService
     @State private var step = 0
     @State private var motivo = ""
-    @State private var tipoMotivo: MotivoVacacion = .descanso
+    @State private var tipoMotivo: MotivoVacacion
     @State private var isLoading = false
     @State private var showConfetti = false
+
+    init(
+        startDate: Date?,
+        endDate: Date?,
+        diasHabiles: Int,
+        empleado: Empleado,
+        motivoPreseleccionado: MotivoVacacion? = nil
+    ) {
+        self.startDate = startDate
+        self.endDate = endDate
+        self.diasHabiles = diasHabiles
+        self.empleado = empleado
+        self.motivoPreseleccionado = motivoPreseleccionado
+        _tipoMotivo = State(initialValue: motivoPreseleccionado ?? .descanso)
+    }
 
     var body: some View {
         ZStack {
@@ -712,7 +774,12 @@ private struct SolicitudVacacionesFlow: View {
                 .foregroundColor(Color(hex: "#9AA5BE"))
                 .multilineTextAlignment(.center)
 
-            MotivoSelectorGrid(selected: $tipoMotivo)
+            if let motivoPreseleccionado {
+                SelectedMotivoSummary(motivo: motivoPreseleccionado)
+                    .padding(.horizontal, 20)
+            } else {
+                MotivoSelectorGrid(selected: $tipoMotivo)
+            }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("Nota adicional")
@@ -880,6 +947,93 @@ private enum MotivoVacacion: CaseIterable {
     }
 }
 
+private struct MotivoQuickPick: View {
+    @Binding var selected: MotivoVacacion?
+    let onSelect: () -> Void
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("¿Cuál es el motivo de tus vacaciones?")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(Color(hex: "#0D1B3E"))
+
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(MotivoVacacion.allCases, id: \.self) { motivo in
+                    Button {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.65)) {
+                            selected = motivo
+                        }
+                        Haptics.impact(.medium)
+                        onSelect()
+                    } label: {
+                        VStack(spacing: 6) {
+                            ZStack {
+                                Circle()
+                                    .fill(selected == motivo ? motivo.color : motivo.color.opacity(0.1))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: motivo.icon)
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(selected == motivo ? .white : motivo.color)
+                            }
+                            .scaleEffect(selected == motivo ? 1.08 : 1.0)
+
+                            Text(motivo.labelCorto)
+                                .font(.system(size: 11, weight: selected == motivo ? .bold : .medium))
+                                .foregroundColor(selected == motivo ? motivo.color : Color(hex: "#6B7280"))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
+                    .animation(.spring(response: 0.25, dampingFraction: 0.7), value: selected)
+                }
+            }
+        }
+        .padding(14)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 10, x: 0, y: 3)
+    }
+}
+
+private struct SelectedMotivoSummary: View {
+    let motivo: MotivoVacacion
+
+    var body: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(motivo.color.opacity(0.12))
+                    .frame(width: 44, height: 44)
+                Image(systemName: motivo.icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(motivo.color)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Motivo seleccionado")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color(hex: "#9AA5BE"))
+                Text(motivo.label)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundColor(Color(hex: "#0D1B3E"))
+            }
+
+            Spacer()
+        }
+        .padding(14)
+        .background(motivo.color.opacity(0.06))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(motivo.color.opacity(0.16), lineWidth: 1)
+        }
+    }
+}
+
 private struct MotivoSelectorGrid: View {
     @Binding var selected: MotivoVacacion
     private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
@@ -995,6 +1149,17 @@ private struct ParticleData: Identifiable {
 }
 
 private extension MotivoVacacion {
+    var labelCorto: String {
+        switch self {
+        case .descanso: "Descanso"
+        case .viaje: "Viaje"
+        case .familia: "Familia"
+        case .salud: "Salud"
+        case .tramites: "Trámites"
+        case .otro: "Otro"
+        }
+    }
+
     var color: Color {
         switch self {
         case .descanso: Color(hex: "#7C5CFC")
@@ -1030,132 +1195,559 @@ private extension MotivoVacacion {
     }
 }
 
-private struct BeachSceneView: View {
+private struct MotivacionSceneView: View {
+    let motivo: MotivoVacacion
     let diasHabiles: Int
     let hasFullRange: Bool
 
-    @State private var waveOffset: CGFloat = 0
-    @State private var birdOffset: CGFloat = -200
-    @State private var palmSway: Double = 0
-    @State private var umbrellaAppeared = false
-
-    private var sunPosition: CGFloat {
-        let progress = min(Double(diasHabiles) / 15.0, 1.0)
-        return CGFloat(1.0 - progress) * 60
+    var body: some View {
+        ZStack {
+            switch motivo {
+            case .descanso:
+                DescansoScene(dias: diasHabiles, full: hasFullRange)
+            case .viaje:
+                ViajeScene(dias: diasHabiles, full: hasFullRange)
+            case .familia:
+                FamiliaScene(dias: diasHabiles, full: hasFullRange)
+            case .salud:
+                SaludScene(dias: diasHabiles, full: hasFullRange)
+            case .tramites:
+                TramitesScene(dias: diasHabiles, full: hasFullRange)
+            case .otro:
+                DescansoScene(dias: diasHabiles, full: hasFullRange)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .shadow(color: motivo.color.opacity(0.18), radius: 12, x: 0, y: 5)
+        .animation(.spring(response: 0.5), value: motivo)
     }
+}
+
+private struct DescansoScene: View {
+    let dias: Int
+    let full: Bool
+
+    @State private var waveOffset: CGFloat = 0
+    @State private var hamacaSway: Double = 0
+    @State private var lunaY: CGFloat = 0
+    @State private var starOpacity: [Double] = Array(repeating: 0, count: 8)
 
     var body: some View {
         ZStack(alignment: .bottom) {
             LinearGradient(
-                colors: hasFullRange ? [Color(hex: "#87CEEB"), Color(hex: "#B8E4F7")] : [Color(hex: "#B8D4E8"), Color(hex: "#D4EAF5")],
+                colors: [Color(hex: "#0F1B3D"), Color(hex: "#1E3A5F"), Color(hex: "#2D6A8F")],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color(hex: "#FFD700"), Color(hex: "#FFA500"), Color(hex: "#FFA500").opacity(0)],
-                        center: .center,
-                        startRadius: 10,
-                        endRadius: 30
-                    )
-                )
-                .frame(width: 44, height: 44)
-                .offset(x: 80, y: -sunPosition - 30)
-                .animation(.spring(response: 0.8, dampingFraction: 0.6), value: diasHabiles)
-
-            if hasFullRange {
+            if full {
                 ForEach(0..<8, id: \.self) { index in
-                    Rectangle()
-                        .fill(Color(hex: "#FFD700").opacity(0.4))
-                        .frame(width: 2, height: 12)
-                        .offset(x: 80, y: -sunPosition - 30)
-                        .rotationEffect(.degrees(Double(index) * 45), anchor: UnitPoint(x: 0.5, y: 2.5))
-                }
-
-                HStack(spacing: 8) {
-                    ForEach(0..<3, id: \.self) { index in
-                        Image(systemName: "bird")
-                            .font(.system(size: 10 + CGFloat(index) * 2))
-                            .foregroundColor(Color(hex: "#4B5675").opacity(0.6))
-                            .offset(y: CGFloat(index) * -5)
-                    }
-                }
-                .offset(x: birdOffset, y: -70)
-                .onAppear {
-                    withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
-                        birdOffset = 300
-                    }
-                }
-            }
-
-            PalmTreeView(sway: palmSway)
-                .frame(width: 70, height: 100)
-                .offset(x: -120, y: 10)
-                .onAppear {
-                    withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-                        palmSway = 8
-                    }
-                }
-
-            if hasFullRange {
-                BeachUmbrellaView()
-                    .frame(width: 60, height: 50)
-                    .offset(x: 60, y: 0)
-                    .opacity(umbrellaAppeared ? 1 : 0)
-                    .scaleEffect(umbrellaAppeared ? 1 : 0.3, anchor: .bottom)
-                    .onAppear {
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.2)) {
-                            umbrellaAppeared = true
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: CGFloat(2 + index % 3), height: CGFloat(2 + index % 3))
+                        .offset(
+                            x: CGFloat([-132, -92, -44, 0, 36, 76, 112, 148][index]),
+                            y: CGFloat([-58, -72, -48, -65, -54, -42, -70, -50][index])
+                        )
+                        .opacity(starOpacity[index])
+                        .onAppear {
+                            withAnimation(.easeInOut(duration: 1.4 + Double(index % 3) * 0.4).repeatForever(autoreverses: true).delay(Double(index) * 0.18)) {
+                                starOpacity[index] = 1
+                            }
                         }
-                    }
+                }
+
+                HamacaView(sway: hamacaSway)
+                    .offset(y: -32)
             }
 
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(hex: "#F5DEB3"))
-                .frame(height: 36)
+            Circle()
+                .fill(Color(hex: "#FFF9C4"))
+                .frame(width: 40, height: 40)
                 .overlay {
-                    HStack(spacing: 6) {
-                        ForEach(0..<12, id: \.self) { index in
-                            Circle()
-                                .fill(Color(hex: "#D4A96A").opacity(0.5))
-                                .frame(width: CGFloat(2 + index % 3), height: CGFloat(2 + index % 3))
-                        }
-                    }
+                    Circle()
+                        .fill(Color(hex: "#1E3A5F"))
+                        .frame(width: 32, height: 32)
+                        .offset(x: -6, y: -4)
                 }
-
-            WaveView(offset: waveOffset, color: Color(hex: "#4FC3F7").opacity(0.7))
-                .frame(height: 40)
-                .offset(y: -20)
+                .offset(x: 102, y: -lunaY - 58)
                 .onAppear {
-                    withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
-                        waveOffset = -200
+                    withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
+                        lunaY = 8
                     }
                 }
 
-            WaveView(offset: waveOffset * 0.7 + 50, color: Color(hex: "#29B6F6").opacity(0.5))
-                .frame(height: 35)
-                .offset(y: -16)
+            SiluetaPalmera(side: .left)
+            SiluetaPalmera(side: .right)
 
-            if diasHabiles > 0 {
-                VStack(spacing: 2) {
-                    Text("\(diasHabiles)")
-                        .font(.system(size: 28, weight: .black, design: .rounded))
-                        .foregroundColor(.white)
-                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
-                        .contentTransition(.numericText())
-                    Text("días de playa 🌴")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.9))
-                        .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
-                }
-                .offset(x: -50, y: -60)
-                .animation(.spring(response: 0.4), value: diasHabiles)
+            WaveView(offset: waveOffset, color: Color(hex: "#1565C0").opacity(0.5))
+                .frame(height: 30)
+                .offset(y: -10)
+            WaveView(offset: waveOffset * 0.6, color: Color(hex: "#0D47A1").opacity(0.4))
+                .frame(height: 25)
+                .offset(y: -6)
+
+            Rectangle()
+                .fill(Color(hex: "#8D7B6A"))
+                .frame(height: 20)
+
+            SceneDayCounter(dias: dias, color: .white, label: "días de descanso")
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
+                waveOffset = -200
+            }
+            withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                hamacaSway = 10
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: Color(hex: "#4FC3F7").opacity(0.3), radius: 16, x: 0, y: 6)
+    }
+}
+
+private struct ViajeScene: View {
+    let dias: Int
+    let full: Bool
+
+    @State private var airplaneX: CGFloat = -250
+    @State private var waveOffset: CGFloat = 0
+    @State private var cloudOffset1: CGFloat = 0
+    @State private var cloudOffset2: CGFloat = 0
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [Color(hex: "#1565C0"), Color(hex: "#42A5F5"), Color(hex: "#90CAF9")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            CloudShape()
+                .fill(Color.white.opacity(0.85))
+                .frame(width: 80, height: 35)
+                .offset(x: -110 + cloudOffset1, y: -72)
+
+            CloudShape()
+                .fill(Color.white.opacity(0.7))
+                .frame(width: 55, height: 25)
+                .offset(x: 44 + cloudOffset2, y: -54)
+
+            CiudadSilueta()
+                .offset(y: -18)
+
+            if full {
+                Image(systemName: "airplane")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.18), radius: 4, x: 0, y: 2)
+                    .offset(x: airplaneX, y: -66)
+            }
+
+            WaveView(offset: waveOffset, color: Color(hex: "#1976FF").opacity(0.6))
+                .frame(height: 30)
+                .offset(y: -10)
+            WaveView(offset: waveOffset * 0.7, color: Color(hex: "#42A5F5").opacity(0.4))
+                .frame(height: 25)
+                .offset(y: -6)
+
+            Rectangle()
+                .fill(Color(hex: "#F5DEB3"))
+                .frame(height: 20)
+
+            SceneDayCounter(dias: dias, color: .white, label: "días para viajar")
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                waveOffset = -200
+            }
+            withAnimation(.linear(duration: 15).repeatForever(autoreverses: false)) {
+                cloudOffset1 = 350
+            }
+            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false).delay(3)) {
+                cloudOffset2 = 350
+            }
+            withAnimation(.linear(duration: 3.5).repeatForever(autoreverses: false)) {
+                airplaneX = 250
+            }
+        }
+    }
+}
+
+private struct FamiliaScene: View {
+    let dias: Int
+    let full: Bool
+
+    @State private var waveOffset: CGFloat = 0
+    @State private var sunY: CGFloat = 0
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [Color(hex: "#FF8A65"), Color(hex: "#FFB74D"), Color(hex: "#FFF9C4")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            ZStack {
+                ForEach(0..<8, id: \.self) { index in
+                    Rectangle()
+                        .fill(Color(hex: "#FFD700").opacity(0.55))
+                        .frame(width: 2, height: 14)
+                        .offset(y: -28)
+                        .rotationEffect(.degrees(Double(index) * 45))
+                }
+                Circle()
+                    .fill(Color(hex: "#FFD700"))
+                    .frame(width: 36, height: 36)
+            }
+            .offset(x: -104, y: -sunY - 58)
+
+            if full {
+                HStack(spacing: 8) {
+                    FiguraPersona(altura: 42, color: Color(hex: "#5C3BC1"))
+                    FiguraPersona(altura: 28, color: Color(hex: "#EC4899"))
+                    FiguraPersona(altura: 40, color: Color(hex: "#003087"))
+                }
+                .offset(y: -24)
+            }
+
+            BeachUmbrellaView()
+                .frame(width: 60, height: 55)
+                .offset(x: 82, y: -14)
+
+            WaveView(offset: waveOffset, color: Color(hex: "#29B6F6").opacity(0.7))
+                .frame(height: 35)
+                .offset(y: -14)
+            WaveView(offset: waveOffset * 0.6, color: Color(hex: "#0288D1").opacity(0.5))
+                .frame(height: 28)
+                .offset(y: -10)
+
+            Rectangle()
+                .fill(Color(hex: "#F5DEB3"))
+                .frame(height: 24)
+
+            SceneDayCounter(dias: dias, color: Color(hex: "#0D1B3E"), label: "días en familia")
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                waveOffset = -200
+            }
+            withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
+                sunY = 5
+            }
+        }
+    }
+}
+
+private struct SaludScene: View {
+    let dias: Int
+    let full: Bool
+
+    @State private var birdOffset: CGFloat = -220
+    @State private var waveOffset: CGFloat = 0
+    @State private var treeScale: CGFloat = 0.85
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [Color(hex: "#1B5E20"), Color(hex: "#388E3C"), Color(hex: "#81C784")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            MountainSilhouette(x: -70, height: 78, color: Color(hex: "#2E7D32"))
+            MountainSilhouette(x: 64, height: 64, color: Color(hex: "#388E3C"))
+            MountainSilhouette(x: 0, height: 92, color: Color(hex: "#1B5E20"))
+
+            if full {
+                HStack(spacing: 10) {
+                    ForEach(0..<4, id: \.self) { index in
+                        Image(systemName: "bird")
+                            .font(.system(size: 10 + CGFloat(index % 2) * 3))
+                            .foregroundColor(.white.opacity(0.8))
+                            .offset(y: CGFloat(index % 2 == 0 ? -5 : 0))
+                    }
+                }
+                .offset(x: birdOffset, y: -62)
+            }
+
+            HStack(spacing: 20) {
+                ArbolSimple(color: Color(hex: "#1B5E20"))
+                ArbolSimple(color: Color(hex: "#2E7D32"))
+                ArbolSimple(color: Color(hex: "#388E3C"))
+            }
+            .scaleEffect(treeScale)
+            .offset(y: -14)
+
+            WaveView(offset: waveOffset, color: Color(hex: "#29B6F6").opacity(0.5))
+                .frame(height: 20)
+                .offset(y: -8)
+
+            Rectangle()
+                .fill(Color(hex: "#33691E"))
+                .frame(height: 20)
+
+            SceneDayCounter(dias: dias, color: .white, label: "días para cuidarte")
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
+                waveOffset = -200
+            }
+            withAnimation(.linear(duration: 5).repeatForever(autoreverses: false)) {
+                birdOffset = 250
+            }
+            withAnimation(.spring(response: 1, dampingFraction: 0.65)) {
+                treeScale = 1
+            }
+        }
+    }
+}
+
+private struct TramitesScene: View {
+    let dias: Int
+    let full: Bool
+
+    @State private var carOffset: CGFloat = -220
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [Color(hex: "#4A148C"), Color(hex: "#7B1FA2"), Color(hex: "#CE93D8")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            CiudadSilueta()
+                .offset(y: -10)
+
+            if full {
+                ZStack(alignment: .bottom) {
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(Color(hex: "#1565C0"))
+                        .frame(width: 38, height: 14)
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .fill(Color(hex: "#64B5F6"))
+                        .frame(width: 18, height: 9)
+                        .offset(x: 4, y: -9)
+                    HStack(spacing: 20) {
+                        Circle().fill(Color(hex: "#0D1B3E")).frame(width: 6, height: 6)
+                        Circle().fill(Color(hex: "#0D1B3E")).frame(width: 6, height: 6)
+                    }
+                    .offset(y: 3)
+                }
+                .offset(x: carOffset, y: -20)
+            }
+
+            Rectangle()
+                .fill(Color(hex: "#263238"))
+                .frame(height: 22)
+
+            HStack(spacing: 20) {
+                ForEach(0..<6, id: \.self) { _ in
+                    Rectangle()
+                        .fill(Color(hex: "#FFD700").opacity(0.55))
+                        .frame(width: 20, height: 3)
+                }
+            }
+            .offset(y: -11)
+
+            SceneDayCounter(dias: dias, color: .white, label: "días de trámite")
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
+                carOffset = 250
+            }
+        }
+    }
+}
+
+private struct SceneDayCounter: View {
+    let dias: Int
+    let color: Color
+    let label: String
+
+    var body: some View {
+        if dias > 0 {
+            VStack(spacing: 1) {
+                Text("\(dias)")
+                    .font(.system(size: 26, weight: .black, design: .rounded))
+                    .foregroundColor(color)
+                    .shadow(color: .black.opacity(0.18), radius: 3, x: 0, y: 1)
+                    .contentTransition(.numericText())
+                Text(label)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(color.opacity(0.85))
+                    .shadow(color: .black.opacity(0.12), radius: 2, x: 0, y: 1)
+            }
+            .offset(x: -58, y: -76)
+            .animation(.spring(response: 0.4), value: dias)
+        }
+    }
+}
+
+private struct HamacaView: View {
+    let sway: Double
+
+    var body: some View {
+        ZStack {
+            Path { path in
+                path.move(to: CGPoint(x: -62, y: -20))
+                path.addLine(to: CGPoint(x: -22, y: 10))
+            }
+            .stroke(Color(hex: "#8B6914"), lineWidth: 2)
+
+            Path { path in
+                path.move(to: CGPoint(x: 62, y: -20))
+                path.addLine(to: CGPoint(x: 22, y: 10))
+            }
+            .stroke(Color(hex: "#8B6914"), lineWidth: 2)
+
+            Path { path in
+                path.move(to: CGPoint(x: -24, y: 10))
+                path.addQuadCurve(to: CGPoint(x: 24, y: 10), control: CGPoint(x: 0, y: 26))
+            }
+            .stroke(Color(hex: "#E57373"), lineWidth: 10)
+            .rotationEffect(.degrees(sway * 0.35), anchor: UnitPoint(x: 0.5, y: 0))
+        }
+    }
+}
+
+private enum PalmeraSide {
+    case left
+    case right
+}
+
+private struct SiluetaPalmera: View {
+    let side: PalmeraSide
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Rectangle()
+                .fill(Color(hex: "#0D2137"))
+                .frame(width: 6, height: 50)
+                .rotationEffect(.degrees(side == .left ? -8 : 8), anchor: .bottom)
+
+            ForEach(0..<4, id: \.self) { index in
+                Ellipse()
+                    .fill(Color(hex: "#0D2137"))
+                    .frame(width: 28, height: 10)
+                    .offset(
+                        x: side == .left ? CGFloat(index % 2 == 0 ? 8 : -8) : CGFloat(index % 2 == 0 ? -8 : 8),
+                        y: -46
+                    )
+                    .rotationEffect(.degrees(Double(index) * 40 - 60))
+            }
+        }
+        .offset(x: side == .left ? -130 : 130, y: 10)
+    }
+}
+
+private struct CloudShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.addEllipse(in: CGRect(x: rect.minX + 5, y: rect.midY, width: rect.width * 0.5, height: rect.height * 0.5))
+            path.addEllipse(in: CGRect(x: rect.minX + 20, y: rect.minY + 4, width: rect.width * 0.45, height: rect.height * 0.6))
+            path.addEllipse(in: CGRect(x: rect.midX, y: rect.midY, width: rect.width * 0.5, height: rect.height * 0.5))
+        }
+    }
+}
+
+private struct CiudadSilueta: View {
+    private let edificios: [(width: CGFloat, height: CGFloat, x: CGFloat)] = [
+        (12, 40, -120), (8, 55, -106), (16, 35, -96), (10, 65, -78),
+        (14, 45, -62), (20, 30, -44), (10, 50, -22), (12, 42, -8),
+        (18, 60, 12), (8, 38, 32), (14, 50, 48), (10, 35, 64),
+        (16, 55, 80), (12, 40, 98), (8, 48, 112)
+    ]
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ForEach(edificios.indices, id: \.self) { index in
+                let edificio = edificios[index]
+                VStack(spacing: 0) {
+                    if index % 3 == 0 {
+                        Rectangle()
+                            .fill(Color(hex: "#0D2137"))
+                            .frame(width: 1.5, height: 8)
+                    }
+                    Rectangle()
+                        .fill(Color(hex: "#0D2137").opacity(0.86))
+                        .frame(width: edificio.width, height: edificio.height)
+                        .overlay {
+                            VStack(spacing: 4) {
+                                ForEach(0..<max(Int(edificio.height / 12), 1), id: \.self) { row in
+                                    HStack(spacing: 3) {
+                                        ForEach(0..<max(Int(edificio.width / 6), 1), id: \.self) { column in
+                                            Rectangle()
+                                                .fill(Color(hex: "#FFD700").opacity((row + column + index).isMultiple(of: 2) ? 0.75 : 0.28))
+                                                .frame(width: 2, height: 2)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                }
+                .offset(x: edificio.x)
+            }
+        }
+    }
+}
+
+private struct FiguraPersona: View {
+    let altura: CGFloat
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Circle()
+                .fill(color)
+                .frame(width: altura * 0.35, height: altura * 0.35)
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(color)
+                .frame(width: altura * 0.28, height: altura * 0.5)
+        }
+    }
+}
+
+private struct MountainSilhouette: View {
+    let x: CGFloat
+    let height: CGFloat
+    let color: Color
+
+    var body: some View {
+        Triangle()
+            .fill(color)
+            .frame(width: height * 1.4, height: height)
+            .offset(x: x, y: -height / 2 + 15)
+    }
+}
+
+private struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+            path.closeSubpath()
+        }
+    }
+}
+
+private struct ArbolSimple: View {
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Triangle()
+                .fill(color)
+                .frame(width: 22, height: 28)
+            Triangle()
+                .fill(color)
+                .frame(width: 28, height: 22)
+                .offset(y: -8)
+            Rectangle()
+                .fill(Color(hex: "#5D4037"))
+                .frame(width: 5, height: 10)
+        }
     }
 }
 
@@ -1215,17 +1807,28 @@ private struct BeachUmbrellaView: View {
                 .frame(width: 3, height: 40)
                 .rotationEffect(.degrees(15), anchor: .bottom)
 
-            HalfCircle()
-                .fill(
-                    LinearGradient(
-                        colors: [Color(hex: "#F03E3E"), Color(hex: "#FF8C00"), Color(hex: "#FFD700")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+            HalfCircleStriped()
                 .frame(width: 50, height: 25)
                 .offset(x: 8, y: -28)
                 .rotationEffect(.degrees(15), anchor: .bottom)
+        }
+    }
+}
+
+private struct HalfCircleStriped: View {
+    var body: some View {
+        ZStack {
+            HalfCircle()
+                .fill(Color(hex: "#1565C0"))
+
+            HStack(spacing: 0) {
+                ForEach(0..<5, id: \.self) { index in
+                    Rectangle()
+                        .fill(index.isMultiple(of: 2) ? Color.white.opacity(0.82) : Color.clear)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .mask(HalfCircle())
         }
     }
 }
