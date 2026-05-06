@@ -60,10 +60,12 @@ struct VacacionesView: View {
                     }
 
                     if let motivo = motivoSeleccionado, endDate != nil {
-                        MotivacionSceneView(motivo: motivo, diasHabiles: diasHabiles, hasFullRange: endDate != nil)
-                            .frame(height: 150)
-                            .padding(.horizontal, 20)
-                            .transition(.scale(scale: 0.92).combined(with: .opacity))
+                        MotivacionSceneView(
+                            motivo: motivo, diasHabiles: diasHabiles, hasFullRange: endDate != nil
+                        )
+                        .frame(height: 150)
+                        .padding(.horizontal, 20)
+                        .transition(.scale(scale: 0.92).combined(with: .opacity))
                     } else if startDate != nil && endDate != nil {
                         HStack(spacing: 8) {
                             Image(systemName: "hand.tap.fill")
@@ -112,13 +114,20 @@ struct VacacionesView: View {
                 endDate: endDate,
                 diasHabiles: diasHabiles,
                 empleado: viewModel.empleado,
-                motivoPreseleccionado: motivoSeleccionado
+                motivoPreseleccionado: motivoSeleccionado,
+                onSubmit: { start, end, reason in
+                    await viewModel.createVacationRequest(
+                        startDate: start, endDate: end, reason: reason)
+                }
             )
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(28)
         }
         .animation(.spring(response: 0.4), value: startDate != nil)
+        .task {
+            await viewModel.loadFromBackendIfPossible()
+        }
     }
 
     private var header: some View {
@@ -166,11 +175,13 @@ struct VacacionesView: View {
     private var summaryCard: some View {
         MabeCard {
             HStack {
-                SummaryMetric(title: "Disponibles", value: "\(viewModel.empleado.diasVacacionesDisponibles)")
+                SummaryMetric(
+                    title: "Disponibles", value: "\(viewModel.empleado.diasVacacionesDisponibles)")
                 Divider().frame(height: 42)
                 SummaryMetric(title: "Usados", value: "\(viewModel.diasUsados)")
                 Divider().frame(height: 42)
-                SummaryMetric(title: "Totales", value: "\(viewModel.empleado.diasVacacionesTotales)")
+                SummaryMetric(
+                    title: "Totales", value: "\(viewModel.empleado.diasVacacionesTotales)")
             }
         }
         .padding(.horizontal, 20)
@@ -194,7 +205,8 @@ struct VacacionesView: View {
                                 .foregroundStyle(Color.mabeGray500)
                         }
                         Spacer()
-                        MabeStatusBadge(status: solicitud.estado.rawValue, color: solicitud.estado.color)
+                        MabeStatusBadge(
+                            status: solicitud.estado.rawValue, color: solicitud.estado.color)
                     }
                 }
             }
@@ -245,8 +257,10 @@ private struct MabeCalendar: View {
     private let weekdayHeaders = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
 
     private var daysInMonth: [Date?] {
-        guard let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth)),
-              let range = calendar.range(of: .day, in: .month, for: displayedMonth)
+        guard
+            let monthStart = calendar.date(
+                from: calendar.dateComponents([.year, .month], from: displayedMonth)),
+            let range = calendar.range(of: .day, in: .month, for: displayedMonth)
         else { return [] }
 
         let weekday = calendar.component(.weekday, from: monthStart) - 1
@@ -270,7 +284,10 @@ private struct MabeCalendar: View {
                 ForEach(weekdayHeaders, id: \.self) { day in
                     Text(day)
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor((day == "Dom" || day == "Sáb") ? Color(hex: "#F03E3E").opacity(0.5) : Color(hex: "#9AA5BE"))
+                        .foregroundColor(
+                            (day == "Dom" || day == "Sáb")
+                                ? Color(hex: "#F03E3E").opacity(0.5) : Color(hex: "#9AA5BE")
+                        )
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -316,7 +333,9 @@ private struct MabeCalendar: View {
         HStack {
             Button {
                 withAnimation(.spring(response: 0.4)) {
-                    displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth
+                    displayedMonth =
+                        calendar.date(byAdding: .month, value: -1, to: displayedMonth)
+                        ?? displayedMonth
                 }
             } label: {
                 Image(systemName: "chevron.left")
@@ -338,7 +357,9 @@ private struct MabeCalendar: View {
 
             Button {
                 withAnimation(.spring(response: 0.4)) {
-                    displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth
+                    displayedMonth =
+                        calendar.date(byAdding: .month, value: 1, to: displayedMonth)
+                        ?? displayedMonth
                 }
             } label: {
                 Image(systemName: "chevron.right")
@@ -502,7 +523,10 @@ private struct AirbnbDayCell: View {
                 }
 
                 Text(dayNumber)
-                    .font(.system(size: 14, weight: isSelected ? .bold : isToday ? .semibold : .regular))
+                    .font(
+                        .system(
+                            size: 14, weight: isSelected ? .bold : isToday ? .semibold : .regular)
+                    )
                     .foregroundColor(textColor)
                     .scaleEffect(isSelected ? 0.85 : 1.0)
             }
@@ -539,13 +563,16 @@ private struct RangoSeleccionadoCard: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 16) {
-                dateSummary(label: "Inicio", value: startDate.formatted(.dateTime.day().month(.abbreviated)))
+                dateSummary(
+                    label: "Inicio", value: startDate.formatted(.dateTime.day().month(.abbreviated))
+                )
 
                 VStack(spacing: 2) {
                     if tieneEndDate {
                         Text("\(diasHabiles) días")
                             .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(diasSuficientes ? Color(hex: "#1976FF") : Color(hex: "#F03E3E"))
+                            .foregroundColor(
+                                diasSuficientes ? Color(hex: "#1976FF") : Color(hex: "#F03E3E"))
                         Text("hábiles")
                             .font(.system(size: 9, weight: .medium))
                             .foregroundColor(Color(hex: "#9AA5BE"))
@@ -556,7 +583,10 @@ private struct RangoSeleccionadoCard: View {
                 }
                 .frame(maxWidth: .infinity)
 
-                dateSummary(label: "Fin", value: endDate.map { $0.formatted(.dateTime.day().month(.abbreviated)) } ?? "Selecciona...", alignment: .trailing)
+                dateSummary(
+                    label: "Fin",
+                    value: endDate.map { $0.formatted(.dateTime.day().month(.abbreviated)) }
+                        ?? "Selecciona...", alignment: .trailing)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
@@ -581,7 +611,8 @@ private struct RangoSeleccionadoCard: View {
                         validationRow(
                             icon: "lightbulb.fill",
                             color: Color(hex: "#D97706"),
-                            text: "Ajusta las fechas para usar máximo \(diasDisponibles) días hábiles"
+                            text:
+                                "Ajusta las fechas para usar máximo \(diasDisponibles) días hábiles"
                         )
                     }
                 }
@@ -602,9 +633,15 @@ private struct RangoSeleccionadoCard: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(puedeEnviar ? AnyShapeStyle(Color(hex: "#003087")) : AnyShapeStyle(Color(hex: "#9AA5BE")))
+                    .background(
+                        puedeEnviar
+                            ? AnyShapeStyle(Color(hex: "#003087"))
+                            : AnyShapeStyle(Color(hex: "#9AA5BE"))
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .shadow(color: puedeEnviar ? Color(hex: "#1976FF").opacity(0.3) : .clear, radius: 10, x: 0, y: 4)
+                    .shadow(
+                        color: puedeEnviar ? Color(hex: "#1976FF").opacity(0.3) : .clear,
+                        radius: 10, x: 0, y: 4)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
@@ -617,7 +654,9 @@ private struct RangoSeleccionadoCard: View {
         .animation(.spring(response: 0.4), value: tieneEndDate)
     }
 
-    private func dateSummary(label: String, value: String, alignment: HorizontalAlignment = .leading) -> some View {
+    private func dateSummary(
+        label: String, value: String, alignment: HorizontalAlignment = .leading
+    ) -> some View {
         VStack(alignment: alignment, spacing: 3) {
             Text(label)
                 .font(.system(size: 11, weight: .semibold))
@@ -625,7 +664,8 @@ private struct RangoSeleccionadoCard: View {
                 .tracking(0.5)
             Text(value)
                 .font(.system(size: 17, weight: .bold))
-                .foregroundColor(value == "Selecciona..." ? Color(hex: "#9AA5BE") : Color(hex: "#0D1B3E"))
+                .foregroundColor(
+                    value == "Selecciona..." ? Color(hex: "#9AA5BE") : Color(hex: "#0D1B3E"))
         }
     }
 
@@ -650,6 +690,7 @@ private struct SolicitudVacacionesFlow: View {
     let diasHabiles: Int
     let empleado: Empleado
     let motivoPreseleccionado: MotivoVacacion?
+    let onSubmit: (_ startDate: Date, _ endDate: Date, _ reason: String) async -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(RewardService.self) private var rewardService
@@ -664,13 +705,15 @@ private struct SolicitudVacacionesFlow: View {
         endDate: Date?,
         diasHabiles: Int,
         empleado: Empleado,
-        motivoPreseleccionado: MotivoVacacion? = nil
+        motivoPreseleccionado: MotivoVacacion? = nil,
+        onSubmit: @escaping (_ startDate: Date, _ endDate: Date, _ reason: String) async -> Void
     ) {
         self.startDate = startDate
         self.endDate = endDate
         self.diasHabiles = diasHabiles
         self.empleado = empleado
         self.motivoPreseleccionado = motivoPreseleccionado
+        self.onSubmit = onSubmit
         _tipoMotivo = State(initialValue: motivoPreseleccionado ?? .descanso)
     }
 
@@ -706,7 +749,9 @@ private struct SolicitudVacacionesFlow: View {
                 .foregroundColor(Color(hex: "#0D1B3E"))
 
             HStack(spacing: 0) {
-                dateBlock(label: "Inicio", date: startDate?.formatted(.dateTime.day().month(.wide)) ?? "—")
+                dateBlock(
+                    label: "Inicio", date: startDate?.formatted(.dateTime.day().month(.wide)) ?? "—"
+                )
                 VStack(spacing: 4) {
                     Text("\(diasHabiles)")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
@@ -719,7 +764,9 @@ private struct SolicitudVacacionesFlow: View {
                 .frame(maxWidth: .infinity)
                 dateBlock(
                     label: "Regreso",
-                    date: endDate.flatMap { Calendar.current.date(byAdding: .day, value: 1, to: $0) }?.formatted(.dateTime.day().month(.wide)) ?? "—"
+                    date: endDate.flatMap {
+                        Calendar.current.date(byAdding: .day, value: 1, to: $0)
+                    }?.formatted(.dateTime.day().month(.wide)) ?? "—"
                 )
             }
             .padding(.vertical, 20)
@@ -731,9 +778,11 @@ private struct SolicitudVacacionesFlow: View {
             HStack {
                 Image(systemName: "info.circle")
                     .foregroundColor(Color(hex: "#1976FF"))
-                Text("Quedarán \(max(empleado.diasVacacionesDisponibles - diasHabiles, 0)) días disponibles tras esta solicitud")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "#4B5675"))
+                Text(
+                    "Quedarán \(max(empleado.diasVacacionesDisponibles - diasHabiles, 0)) días disponibles tras esta solicitud"
+                )
+                .font(.system(size: 14))
+                .foregroundColor(Color(hex: "#4B5675"))
             }
             .padding(.horizontal, 20)
 
@@ -850,7 +899,11 @@ private struct SolicitudVacacionesFlow: View {
                 .multilineTextAlignment(.center)
 
             VStack(spacing: 8) {
-                resumenRow(label: "Período", value: "\(startDate?.formatted(.dateTime.day().month(.abbreviated)) ?? "—") – \(endDate?.formatted(.dateTime.day().month(.abbreviated)) ?? "—")")
+                resumenRow(
+                    label: "Período",
+                    value:
+                        "\(startDate?.formatted(.dateTime.day().month(.abbreviated)) ?? "—") – \(endDate?.formatted(.dateTime.day().month(.abbreviated)) ?? "—")"
+                )
                 resumenRow(label: "Días hábiles", value: "\(diasHabiles)")
                 resumenRow(label: "Motivo", value: tipoMotivo.label)
                 resumenRow(label: "Estatus", value: "Pendiente de aprobación")
@@ -900,9 +953,15 @@ private struct SolicitudVacacionesFlow: View {
     }
 
     private func enviarSolicitud() {
+        guard let startDate, let endDate else { return }
+
         isLoading = true
         UINotificationFeedbackGenerator().notificationOccurred(.success)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+
+        Task {
+            let reasonText = motivo.isEmpty ? tipoMotivo.label : motivo
+            await onSubmit(startDate, endDate, reasonText)
+
             isLoading = false
             rewardService.ganarPuntos(
                 tipo: .solicitudCompletada,
@@ -970,7 +1029,10 @@ private struct MotivoQuickPick: View {
                         VStack(spacing: 6) {
                             ZStack {
                                 Circle()
-                                    .fill(selected == motivo ? motivo.color : motivo.color.opacity(0.1))
+                                    .fill(
+                                        selected == motivo
+                                            ? motivo.color : motivo.color.opacity(0.1)
+                                    )
                                     .frame(width: 44, height: 44)
                                 Image(systemName: motivo.icon)
                                     .font(.system(size: 18, weight: .semibold))
@@ -979,8 +1041,12 @@ private struct MotivoQuickPick: View {
                             .scaleEffect(selected == motivo ? 1.08 : 1.0)
 
                             Text(motivo.labelCorto)
-                                .font(.system(size: 11, weight: selected == motivo ? .bold : .medium))
-                                .foregroundColor(selected == motivo ? motivo.color : Color(hex: "#6B7280"))
+                                .font(
+                                    .system(size: 11, weight: selected == motivo ? .bold : .medium)
+                                )
+                                .foregroundColor(
+                                    selected == motivo ? motivo.color : Color(hex: "#6B7280")
+                                )
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
                         }
@@ -1076,7 +1142,9 @@ private struct MotivoCard: View {
                         .fill(isSelected ? motivo.color : motivo.color.opacity(0.12))
                         .frame(width: 52, height: 52)
                         .scaleEffect(isSelected ? 1.1 : 1.0)
-                        .shadow(color: isSelected ? motivo.color.opacity(0.5) : .clear, radius: 10, x: 0, y: 4)
+                        .shadow(
+                            color: isSelected ? motivo.color.opacity(0.5) : .clear, radius: 10,
+                            x: 0, y: 4)
 
                     Image(systemName: motivo.icon)
                         .font(.system(size: 22, weight: .semibold))
@@ -1103,7 +1171,9 @@ private struct MotivoCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(isSelected ? motivo.color : Color(hex: "#DDE3F0"), lineWidth: isSelected ? 2 : 1)
+                    .strokeBorder(
+                        isSelected ? motivo.color : Color(hex: "#DDE3F0"),
+                        lineWidth: isSelected ? 2 : 1)
             }
         }
         .buttonStyle(.plain)
@@ -1148,8 +1218,8 @@ private struct ParticleData: Identifiable {
     var opacity: Double
 }
 
-private extension MotivoVacacion {
-    var labelCorto: String {
+extension MotivoVacacion {
+    fileprivate var labelCorto: String {
         switch self {
         case .descanso: "Descanso"
         case .viaje: "Viaje"
@@ -1160,7 +1230,7 @@ private extension MotivoVacacion {
         }
     }
 
-    var color: Color {
+    fileprivate var color: Color {
         switch self {
         case .descanso: Color(hex: "#7C5CFC")
         case .viaje: Color(hex: "#0EA5E9")
@@ -1171,7 +1241,7 @@ private extension MotivoVacacion {
         }
     }
 
-    var iconAnimation: Animation {
+    fileprivate var iconAnimation: Animation {
         switch self {
         case .descanso: .easeInOut(duration: 0.5)
         case .viaje: .spring(response: 0.3, dampingFraction: 0.4)
@@ -1182,7 +1252,7 @@ private extension MotivoVacacion {
         }
     }
 
-    func iconRotation(animating: Bool) -> Angle {
+    fileprivate func iconRotation(animating: Bool) -> Angle {
         guard animating else { return .zero }
         switch self {
         case .descanso: return Angle.degrees(20)
@@ -1251,7 +1321,11 @@ private struct DescansoScene: View {
                         )
                         .opacity(starOpacity[index])
                         .onAppear {
-                            withAnimation(.easeInOut(duration: 1.4 + Double(index % 3) * 0.4).repeatForever(autoreverses: true).delay(Double(index) * 0.18)) {
+                            withAnimation(
+                                .easeInOut(duration: 1.4 + Double(index % 3) * 0.4).repeatForever(
+                                    autoreverses: true
+                                ).delay(Double(index) * 0.18)
+                            ) {
                                 starOpacity[index] = 1
                             }
                         }
@@ -1631,7 +1705,8 @@ private struct SiluetaPalmera: View {
                     .fill(Color(hex: "#0D2137"))
                     .frame(width: 28, height: 10)
                     .offset(
-                        x: side == .left ? CGFloat(index % 2 == 0 ? 8 : -8) : CGFloat(index % 2 == 0 ? -8 : 8),
+                        x: side == .left
+                            ? CGFloat(index % 2 == 0 ? 8 : -8) : CGFloat(index % 2 == 0 ? -8 : 8),
                         y: -46
                     )
                     .rotationEffect(.degrees(Double(index) * 40 - 60))
@@ -1644,9 +1719,17 @@ private struct SiluetaPalmera: View {
 private struct CloudShape: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
-            path.addEllipse(in: CGRect(x: rect.minX + 5, y: rect.midY, width: rect.width * 0.5, height: rect.height * 0.5))
-            path.addEllipse(in: CGRect(x: rect.minX + 20, y: rect.minY + 4, width: rect.width * 0.45, height: rect.height * 0.6))
-            path.addEllipse(in: CGRect(x: rect.midX, y: rect.midY, width: rect.width * 0.5, height: rect.height * 0.5))
+            path.addEllipse(
+                in: CGRect(
+                    x: rect.minX + 5, y: rect.midY, width: rect.width * 0.5,
+                    height: rect.height * 0.5))
+            path.addEllipse(
+                in: CGRect(
+                    x: rect.minX + 20, y: rect.minY + 4, width: rect.width * 0.45,
+                    height: rect.height * 0.6))
+            path.addEllipse(
+                in: CGRect(
+                    x: rect.midX, y: rect.midY, width: rect.width * 0.5, height: rect.height * 0.5))
         }
     }
 }
@@ -1656,7 +1739,7 @@ private struct CiudadSilueta: View {
         (12, 40, -120), (8, 55, -106), (16, 35, -96), (10, 65, -78),
         (14, 45, -62), (20, 30, -44), (10, 50, -22), (12, 42, -8),
         (18, 60, 12), (8, 38, 32), (14, 50, 48), (10, 35, 64),
-        (16, 55, 80), (12, 40, 98), (8, 48, 112)
+        (16, 55, 80), (12, 40, 98), (8, 48, 112),
     ]
 
     var body: some View {
@@ -1676,9 +1759,14 @@ private struct CiudadSilueta: View {
                             VStack(spacing: 4) {
                                 ForEach(0..<max(Int(edificio.height / 12), 1), id: \.self) { row in
                                     HStack(spacing: 3) {
-                                        ForEach(0..<max(Int(edificio.width / 6), 1), id: \.self) { column in
+                                        ForEach(0..<max(Int(edificio.width / 6), 1), id: \.self) {
+                                            column in
                                             Rectangle()
-                                                .fill(Color(hex: "#FFD700").opacity((row + column + index).isMultiple(of: 2) ? 0.75 : 0.28))
+                                                .fill(
+                                                    Color(hex: "#FFD700").opacity(
+                                                        (row + column + index).isMultiple(of: 2)
+                                                            ? 0.75 : 0.28)
+                                                )
                                                 .frame(width: 2, height: 2)
                                         }
                                     }
@@ -1793,7 +1881,8 @@ private struct PalmTreeView: View {
                     .fill(Color(hex: "#2D7D2D"))
                     .frame(width: 30, height: 12)
                     .offset(x: CGFloat(index % 2 == 0 ? 10 : -10), y: -55 + CGFloat(index) * 3)
-                    .rotationEffect(.degrees(Double(index) * 36 + sway), anchor: UnitPoint(x: 0, y: 0.5))
+                    .rotationEffect(
+                        .degrees(Double(index) * 36 + sway), anchor: UnitPoint(x: 0, y: 0.5))
             }
         }
     }
@@ -1855,7 +1944,9 @@ private struct VacationConfetti: View {
         ZStack {
             ForEach(0..<28, id: \.self) { index in
                 Circle()
-                    .fill([Color.mabeBlue, Color.mabeElectric, Color.mabeSuccess, .white][index % 4])
+                    .fill(
+                        [Color.mabeBlue, Color.mabeElectric, Color.mabeSuccess, .white][index % 4]
+                    )
                     .frame(width: 7, height: 7)
                     .offset(
                         x: burst ? CGFloat((index % 7) - 3) * 24 : 0,

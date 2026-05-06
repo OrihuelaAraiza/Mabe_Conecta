@@ -1,6 +1,6 @@
 import Foundation
 
-struct Empleado: Identifiable, Hashable {
+struct Empleado: Identifiable, Hashable, Codable {
     let id: String
     let nombre: String
     let apellidos: String

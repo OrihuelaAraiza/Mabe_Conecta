@@ -45,7 +45,10 @@ final class AppState {
     func restoreSession() {
         guard let session = SessionService.load() else { return }
 
-        if session.empleadoId == "99001" || session.rol == "rh" {
+        if let savedUser = session.user {
+            currentUser = savedUser
+            userRole = session.rol == "rh" ? .agenteRH : .empleado
+        } else if session.empleadoId == "99001" || session.rol == "rh" {
             currentUser = MockDataService.agenteRH
             userRole = .agenteRH
         } else {
@@ -55,11 +58,12 @@ final class AppState {
         isDemoMode = session.isDemoMode
     }
 
-    func signIn(user: Empleado, role: UserRole, isDemo: Bool) {
+    func signIn(user: Empleado, role: UserRole, isDemo: Bool, authToken: String? = nil) {
         currentUser = user
         userRole = role
         isDemoMode = isDemo
-        SessionService.save(empleadoId: user.id, rol: role, isDemoMode: isDemo)
+        SessionService.save(
+            empleadoId: user.id, rol: role, isDemoMode: isDemo, authToken: authToken, user: user)
     }
 
     func signOut() {
@@ -102,14 +106,18 @@ final class AppState {
     func toggleDemoRole() {
         userRole = userRole == .empleado ? .agenteRH : .empleado
         if let currentUser {
-            SessionService.save(empleadoId: currentUser.id, rol: userRole, isDemoMode: isDemoMode)
+            let authToken = SessionService.load()?.authToken
+            let chatSessionId = SessionService.load()?.chatSessionId
+            SessionService.save(
+                empleadoId: currentUser.id, rol: userRole, isDemoMode: isDemoMode,
+                authToken: authToken, chatSessionId: chatSessionId, user: currentUser)
         }
         showToast("👤 Rol: \(userRole.displayName)")
     }
 
     private static func loadOnboardingState() -> Bool {
         guard let data = UserDefaults.standard.data(forKey: "mabe.userPreferences"),
-              let preferences = try? JSONDecoder().decode(UserPreferences.self, from: data)
+            let preferences = try? JSONDecoder().decode(UserPreferences.self, from: data)
         else { return false }
         return preferences.onboardingCompletado
     }

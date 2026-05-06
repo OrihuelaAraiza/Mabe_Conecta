@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SolicitudesView: View {
     @State private var viewModel = SolicitudesViewModel()
+    @State private var showingCreateRequest = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -26,14 +27,25 @@ struct SolicitudesView: View {
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(Color(hex: "#0D1B3E"))
                 Spacer()
-                Button {
-                    Haptics.impact(.light)
-                } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .font(.system(size: 20))
-                        .foregroundColor(Color(hex: "#003087"))
+                HStack(spacing: 10) {
+                    Button {
+                        showingCreateRequest = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color(hex: "#003087"))
+                    }
+                    .accessibilityLabel("Crear solicitud")
+
+                    Button {
+                        Haptics.impact(.light)
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color(hex: "#003087"))
+                    }
+                    .accessibilityLabel("Filtrar solicitudes")
                 }
-                .accessibilityLabel("Filtrar solicitudes")
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
@@ -65,6 +77,20 @@ struct SolicitudesView: View {
         }
         .background(Color.mabeBackground)
         .navigationBarHidden(true)
+        .task {
+            await viewModel.loadFromBackendIfPossible()
+        }
+        .sheet(isPresented: $showingCreateRequest) {
+            CreateSolicitudSheet { kind, subject, detail, priority in
+                Task {
+                    await viewModel.createSolicitud(
+                        kind: kind, subject: subject, detail: detail, priority: priority)
+                    showingCreateRequest = false
+                }
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
     }
 
     private var segmentedControl: some View {
@@ -77,9 +103,14 @@ struct SolicitudesView: View {
                 } label: {
                     Text(segment.rawValue)
                         .font(.callout.weight(.semibold))
-                        .foregroundStyle(viewModel.selectedSegment == segment ? .white : Color.mabeBlue)
+                        .foregroundStyle(
+                            viewModel.selectedSegment == segment ? .white : Color.mabeBlue
+                        )
                         .frame(maxWidth: .infinity, minHeight: 42)
-                        .background(viewModel.selectedSegment == segment ? AnyShapeStyle(Color.mabeBlue) : AnyShapeStyle(Color.clear))
+                        .background(
+                            viewModel.selectedSegment == segment
+                                ? AnyShapeStyle(Color.mabeBlue) : AnyShapeStyle(Color.clear)
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .buttonStyle(.plain)
@@ -110,7 +141,8 @@ private struct RequestCard: View {
                     }
 
                     Spacer()
-                    MabeStatusBadge(status: solicitud.estado.rawValue, color: solicitud.estado.color)
+                    MabeStatusBadge(
+                        status: solicitud.estado.rawValue, color: solicitud.estado.color)
                 }
 
                 Button("Ver detalle") {}
@@ -123,6 +155,78 @@ private struct RequestCard: View {
                     .accessibilityLabel("Ver detalle de \(solicitud.tipo)")
             }
         }
+    }
+}
+
+private struct CreateSolicitudSheet: View {
+    let onSubmit: (_ kind: String, _ subject: String, _ detail: String, _ priority: String) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var kind = "constancia"
+    @State private var subject = ""
+    @State private var detail = ""
+    @State private var priority = "normal"
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Nueva solicitud RH")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(Color.mabeGray900)
+
+            Picker("Tipo", selection: $kind) {
+                Text("Constancia").tag("constancia")
+                Text("Nómina").tag("nomina")
+                Text("Permiso").tag("permisos")
+                Text("Otro").tag("otro")
+            }
+            .pickerStyle(.segmented)
+
+            TextField("Asunto", text: $subject)
+                .textFieldStyle(.roundedBorder)
+
+            TextEditor(text: $detail)
+                .frame(height: 100)
+                .padding(8)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.mabeGray200, lineWidth: 1)
+                )
+
+            Picker("Prioridad", selection: $priority) {
+                Text("Baja").tag("low")
+                Text("Normal").tag("normal")
+                Text("Alta").tag("high")
+            }
+            .pickerStyle(.segmented)
+
+            HStack(spacing: 10) {
+                Button("Cancelar") { dismiss() }
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.mabeGray600)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 46)
+                    .background(Color.mabeGray100)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                Button("Enviar") {
+                    onSubmit(kind, subject, detail, priority)
+                }
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 46)
+                .background(Color.mabeBlue)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .opacity(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.5 : 1)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(20)
+        .background(Color.mabeBackground)
     }
 }
 
@@ -155,7 +259,7 @@ private struct EmptyRequestsView: View {
                     .multilineTextAlignment(.center)
             }
 
-            Button("Crear mi primera solicitud") {}
+            Text("Usa el botón + para crear tu primera solicitud")
                 .font(.mabeSub.weight(.semibold))
                 .foregroundStyle(Color.mabeBlue)
                 .frame(minHeight: 44)

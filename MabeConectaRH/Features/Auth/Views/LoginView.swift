@@ -100,8 +100,11 @@ struct LoginView: View {
                             Task {
                                 if let result = await viewModel.login() {
                                     MabeHaptics.shared.loginSuccess()
-                                    appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
-                                    appState.signIn(user: result.0, role: result.1, isDemo: false)
+                                    appState.hasCompletedOnboarding =
+                                        preferencesStore.hasCompletedOnboarding
+                                    appState.signIn(
+                                        user: result.empleado, role: result.role, isDemo: false,
+                                        authToken: result.token)
                                 }
                             }
                         }
@@ -237,10 +240,12 @@ struct LoginView: View {
     }
 }
 
-private extension View {
-    func premiumEntrance(_ isVisible: Bool, index: Int) -> some View {
+extension View {
+    fileprivate func premiumEntrance(_ isVisible: Bool, index: Int) -> some View {
         opacity(isVisible ? 1 : 0)
             .offset(y: isVisible ? 0 : 20)
-            .animation(.spring(response: 0.5, dampingFraction: 0.86).delay(Double(index) * 0.08), value: isVisible)
+            .animation(
+                .spring(response: 0.5, dampingFraction: 0.86).delay(Double(index) * 0.08),
+                value: isVisible)
     }
 }

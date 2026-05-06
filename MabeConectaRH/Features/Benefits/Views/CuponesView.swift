@@ -10,13 +10,19 @@ struct CuponesView: View {
     @State private var selectedCoupon: Cupon?
     @State private var confettiCounter = 0
     @State private var isLoadingCoupons = true
+    @State private var cuponesBackend: [Cupon] = []
+    @State private var backendCouponIDsByUIID: [String: String] = [:]
+    @State private var errorMessage: String?
+
+    private let api = BackendAPI()
     @Environment(\.dismiss) private var dismiss
     @Environment(RewardService.self) private var rewardService
 
     private var cuponesFiltrados: [Cupon] {
-        selectedCategory == .todos
-            ? MockDataService.cupones
-            : MockDataService.cupones.filter { $0.categoria == selectedCategory }
+        let source = cuponesBackend.isEmpty ? MockDataService.cupones : cuponesBackend
+        return selectedCategory == .todos
+            ? source
+            : source.filter { $0.categoria == selectedCategory }
     }
 
     init(showsBackButton: Bool = true, title: String = "Mis Cupones") {
@@ -67,11 +73,7 @@ struct CuponesView: View {
         .navigationBarHidden(true)
         .background(Color(hex: "#F8F9FC"))
         .task {
-            guard isLoadingCoupons else { return }
-            try? await Task.sleep(nanoseconds: 180_000_000)
-            withAnimation(.easeInOut(duration: 0.22)) {
-                isLoadingCoupons = false
-            }
+            await loadCoupons()
         }
         .sheet(isPresented: $showingRedeemSheet) {
             if let selectedCoupon {
@@ -79,15 +81,9 @@ struct CuponesView: View {
                     cupon: selectedCoupon,
                     isRedeemed: redeemedCoupons.contains(selectedCoupon.id),
                     onRedeem: {
-                        redeemedCoupons.insert(selectedCoupon.id)
-                        rewardService.ganarPuntos(
-                            tipo: .cuponCanjeado,
-                            descripcion: "Cupón canjeado: \(selectedCoupon.titulo)"
-                        )
-                        rewardService.canjearPuntos(selectedCoupon.puntosCosto)
-                        showingRedeemSheet = false
-                        confettiCounter += 1
-                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                        Task {
+                            await redeemCoupon(selectedCoupon)
+                        }
                     }
                 )
                 .presentationDetents([.medium, .large])
@@ -100,7 +96,7 @@ struct CuponesView: View {
     private var gridColumns: [GridItem] {
         [
             GridItem(.flexible(minimum: 145), spacing: 12),
-            GridItem(.flexible(minimum: 145), spacing: 12)
+            GridItem(.flexible(minimum: 145), spacing: 12),
         ]
     }
 
@@ -179,7 +175,8 @@ struct CuponesView: View {
             Divider().frame(height: 38)
             summaryItem(value: "2", label: "Por expirar", color: Color(hex: "#D97706"))
             Divider().frame(height: 38)
-            summaryItem(value: "\(redeemedCoupons.count)", label: "Usados", color: Color(hex: "#00C27C"))
+            summaryItem(
+                value: "\(redeemedCoupons.count)", label: "Usados", color: Color(hex: "#00C27C"))
         }
         .padding(.vertical, 12)
         .background(Color.white)
@@ -223,10 +220,12 @@ struct CuponesView: View {
                     Text("Mis Prestaciones")
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(Color(hex: "#0D1B3E"))
-                    Text("\(MockDataService.numPrestaciones) prestaciones activas · \(MockDataService.valorPaquetePrestaciones)")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color(hex: "#9AA5BE"))
-                        .fixedSize(horizontal: false, vertical: true)
+                    Text(
+                        "\(MockDataService.numPrestaciones) prestaciones activas · \(MockDataService.valorPaquetePrestaciones)"
+                    )
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color(hex: "#9AA5BE"))
+                    .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer()
@@ -371,7 +370,10 @@ private struct CuponCard: View {
             }
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .shadow(color: Color(hex: "#0D1B3E").opacity(isRedeemed ? 0.03 : 0.07), radius: 10, x: 0, y: 3)
+            .shadow(
+                color: Color(hex: "#0D1B3E").opacity(isRedeemed ? 0.03 : 0.07), radius: 10, x: 0,
+                y: 3
+            )
             .opacity(isRedeemed ? 0.65 : 1.0)
         }
         .buttonStyle(ScrollFriendlyPressButtonStyle(scale: 0.97))
@@ -391,7 +393,7 @@ private struct CouponSkeletonCard: View {
                         colors: [
                             Color(hex: "#DDE3F0"),
                             Color(hex: "#EFF3FA"),
-                            Color(hex: "#DDE3F0")
+                            Color(hex: "#DDE3F0"),
                         ],
                         startPoint: pulse ? .trailing : .leading,
                         endPoint: pulse ? .leading : .trailing
@@ -426,7 +428,10 @@ private struct CouponSkeletonCard: View {
         .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 10, x: 0, y: 3)
         .opacity(pulse ? 0.7 : 1.0)
         .onAppear {
-            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true).delay(Double(index) * 0.04)) {
+            withAnimation(
+                .easeInOut(duration: 0.8).repeatForever(autoreverses: true).delay(
+                    Double(index) * 0.04)
+            ) {
                 pulse = true
             }
         }
@@ -493,7 +498,10 @@ private struct PhysicalCouponCard: View {
                         .rotationEffect(.degrees(18))
                         .offset(x: shimmerPhase * 260 - 110)
                         .onAppear {
-                            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false).delay(Double.random(in: 0...2))) {
+                            withAnimation(
+                                .linear(duration: 3).repeatForever(autoreverses: false).delay(
+                                    Double.random(in: 0...2))
+                            ) {
                                 shimmerPhase = 1
                             }
                         }
@@ -558,17 +566,17 @@ private struct PhysicalCouponCard: View {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .fill(Color.black.opacity(0.35))
                         .overlay {
-                        Text("CANJEADO")
-                            .font(.system(size: 18, weight: .black))
-                            .foregroundColor(.white.opacity(0.9))
-                            .rotationEffect(.degrees(-25))
-                            .overlay {
-                                Text("CANJEADO")
-                                    .font(.system(size: 18, weight: .black))
-                                    .foregroundColor(Color(hex: "#F03E3E").opacity(0.6))
-                                    .rotationEffect(.degrees(-25))
-                                    .offset(x: 1, y: 1)
-                            }
+                            Text("CANJEADO")
+                                .font(.system(size: 18, weight: .black))
+                                .foregroundColor(.white.opacity(0.9))
+                                .rotationEffect(.degrees(-25))
+                                .overlay {
+                                    Text("CANJEADO")
+                                        .font(.system(size: 18, weight: .black))
+                                        .foregroundColor(Color(hex: "#F03E3E").opacity(0.6))
+                                        .rotationEffect(.degrees(-25))
+                                        .offset(x: 1, y: 1)
+                                }
                         }
                         .allowsHitTesting(false)
                 }
@@ -587,7 +595,8 @@ private struct ScrollFriendlyPressButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? scale : 1.0)
-            .animation(.spring(response: 0.22, dampingFraction: 0.82), value: configuration.isPressed)
+            .animation(
+                .spring(response: 0.22, dampingFraction: 0.82), value: configuration.isPressed)
     }
 }
 
@@ -601,7 +610,9 @@ private struct DashedDivider: Shape {
 }
 
 private struct BarcodeStripes: View {
-    private let pattern: [CGFloat] = [2, 1, 3, 1, 2, 2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2, 1, 3, 1, 2, 2, 1, 3]
+    private let pattern: [CGFloat] = [
+        2, 1, 3, 1, 2, 2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2, 1, 3, 1, 2, 2, 1, 3,
+    ]
 
     var body: some View {
         HStack(spacing: 1) {
@@ -755,6 +766,108 @@ private struct CuponDetailSheet: View {
     }
 }
 
+extension CuponesView {
+    @MainActor
+    fileprivate func loadCoupons() async {
+        guard isLoadingCoupons else { return }
+
+        guard let session = SessionService.load(),
+            let authToken = session.authToken
+        else {
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            withAnimation(.easeInOut(duration: 0.22)) {
+                isLoadingCoupons = false
+            }
+            return
+        }
+
+        do {
+            async let availableTask = api.listCoupons(authToken: authToken)
+            async let purchasedTask = api.listBoughtCoupons(authToken: authToken)
+
+            let available = try await availableTask
+            let purchased = try await purchasedTask
+
+            var mapped = available.map { $0.toCupon() }
+            var usedSet = Set<String>()
+            var idMap: [String: String] = [:]
+
+            for backendCoupon in available {
+                idMap[backendCoupon.coupon_id] = backendCoupon.coupon_id
+            }
+
+            for purchase in purchased where purchase.used {
+                usedSet.insert(purchase.coupon_id)
+            }
+
+            mapped = mapped.map { coupon in
+                var mutable = coupon
+                if usedSet.contains(coupon.id) {
+                    mutable = Cupon(
+                        id: coupon.id,
+                        titulo: coupon.titulo,
+                        empresa: coupon.empresa,
+                        descripcion: coupon.descripcion,
+                        icon: coupon.icon,
+                        gradient: coupon.gradient,
+                        categoria: coupon.categoria,
+                        puntosCosto: coupon.puntosCosto,
+                        vencimiento: coupon.vencimiento,
+                        codigoPromo: coupon.codigoPromo,
+                        terminos: coupon.terminos
+                    )
+                }
+                return mutable
+            }
+
+            withAnimation(.easeInOut(duration: 0.25)) {
+                cuponesBackend = mapped
+                redeemedCoupons = usedSet
+                backendCouponIDsByUIID = idMap
+                isLoadingCoupons = false
+            }
+        } catch {
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            withAnimation(.easeInOut(duration: 0.22)) {
+                errorMessage = error.localizedDescription
+                isLoadingCoupons = false
+            }
+        }
+    }
+
+    @MainActor
+    fileprivate func redeemCoupon(_ coupon: Cupon) async {
+        guard let session = SessionService.load(),
+            let authToken = session.authToken,
+            let backendCouponID = backendCouponIDsByUIID[coupon.id]
+        else {
+            redeemLocally(coupon)
+            return
+        }
+
+        do {
+            _ = try await api.buyCoupon(couponID: backendCouponID, authToken: authToken)
+            redeemLocally(coupon)
+        } catch {
+            // Keep demo resilient: local fallback if backend redemption fails
+            redeemLocally(coupon)
+        }
+    }
+
+    @MainActor
+    fileprivate func redeemLocally(_ coupon: Cupon) {
+        redeemedCoupons.insert(coupon.id)
+        rewardService.ganarPuntos(
+            tipo: .cuponCanjeado,
+            descripcion: "Cupón canjeado: \(coupon.titulo)"
+        )
+        rewardService.canjearPuntos(coupon.puntosCosto)
+        showingRedeemSheet = false
+        confettiCounter += 1
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+}
+
 private struct ConfettiBurst: View {
     let trigger: Int
     @State private var burst = false
@@ -763,7 +876,12 @@ private struct ConfettiBurst: View {
         ZStack {
             ForEach(0..<40, id: \.self) { index in
                 Circle()
-                    .fill([Color(hex: "#003087"), Color(hex: "#7C5CFC"), Color(hex: "#00C27C"), .white][index % 4])
+                    .fill(
+                        [
+                            Color(hex: "#003087"), Color(hex: "#7C5CFC"), Color(hex: "#00C27C"),
+                            .white,
+                        ][index % 4]
+                    )
                     .frame(width: CGFloat(5 + index % 4), height: CGFloat(5 + index % 4))
                     .offset(
                         x: burst ? CGFloat((index % 9) - 4) * 28 : 0,

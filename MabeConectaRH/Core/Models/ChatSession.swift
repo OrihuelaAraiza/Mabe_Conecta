@@ -1,11 +1,11 @@
 import Foundation
 
-enum ChatRole: Hashable {
+enum ChatRole: String, Hashable, Codable {
     case usuario
     case asistente
 }
 
-struct ChatMessage: Identifiable, Hashable {
+struct ChatMessage: Identifiable, Hashable, Codable {
     let id: UUID
     let rol: ChatRole
     let texto: String

@@ -15,7 +15,7 @@ final class LoginViewModel {
     }
 
     @MainActor
-    func login() async -> (Empleado, UserRole)? {
+    func login() async -> AuthResult? {
         guard canSubmit else { return nil }
         isLoading = true
         errorMessage = nil
