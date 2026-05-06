@@ -939,7 +939,7 @@ struct RecursosSection: View {
                 .font(.system(size: 17, weight: .bold))
                 .foregroundColor(Color(hex: "#0D1B3E"))
 
-            ForEach(recursosOrdenados) { recurso in
+            ForEach(recursosOrdenados.prefix(3)) { recurso in
                 RecursoRow(recurso: recurso, onContactRH: onContactRH)
             }
         }

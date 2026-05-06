@@ -10,30 +10,10 @@ struct RHDashboardView: View {
                 RHHeroWidget(empleado: empleado)
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    KPICard(
-                        valor: 3,
-                        label: "Pendientes",
-                        icon: "clock.fill",
-                        gradient: LinearGradient(colors: [Color(hex:"#B45309"), Color(hex:"#D97706")], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    KPICard(
-                        valor: 12,
-                        label: "Resueltos hoy",
-                        icon: "checkmark.circle.fill",
-                        gradient: LinearGradient(colors: [Color(hex:"#00704A"), Color(hex:"#00C27C")], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    KPICard(
-                        valor: 5,
-                        label: "Chats activos",
-                        icon: "bubble.left.and.bubble.right.fill",
-                        gradient: LinearGradient(colors: [Color(hex:"#003087"), Color(hex:"#1976FF")], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    KPICard(
-                        valor: 94,
-                        label: "Satisfacción %",
-                        icon: "star.fill",
-                        gradient: LinearGradient(colors: [Color(hex:"#5C3BC1"), Color(hex:"#7C5CFC")], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
+                    KPICard(valor: 3,  label: "Pendientes",    icon: "clock.fill",                        accentColor: Color(hex: "#D97706"))
+                    KPICard(valor: 12, label: "Resueltos hoy", icon: "checkmark.circle.fill",             accentColor: Color(hex: "#00C27C"))
+                    KPICard(valor: 5,  label: "Chats activos", icon: "bubble.left.and.bubble.right.fill", accentColor: Color(hex: "#1976FF"))
+                    KPICard(valor: 94, label: "Satisfacción %",icon: "star.fill",                         accentColor: Color(hex: "#7C5CFC"))
                 }
                 .padding(.horizontal, 20)
 
@@ -169,36 +149,36 @@ private struct KPICard: View {
     let valor: Int
     let label: String
     let icon: String
-    let gradient: LinearGradient
+    let accentColor: Color
     @State private var displayedValue: Double = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
-                    .background(gradient)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(accentColor)
+                    .frame(width: 34, height: 34)
+                    .background(accentColor.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 Spacer()
             }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(Int(displayedValue))")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
                     .foregroundColor(Color(hex: "#0D1B3E"))
                     .contentTransition(.numericText(value: displayedValue))
                 Text(label)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundColor(Color(hex: "#9AA5BE"))
             }
         }
-        .padding(16)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: Color(hex: "#0D1B3E").opacity(0.06), radius: 12, x: 0, y: 4)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 8, x: 0, y: 3)
         .onAppear {
             withAnimation(.spring(response: 1.0, dampingFraction: 0.8).delay(0.2)) {
                 displayedValue = Double(valor)

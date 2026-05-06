@@ -27,27 +27,27 @@ struct MabeCard<Content: View>: View {
     private var shadowColor: Color {
         switch elevation {
         case .low:
-            Color.mabePrimary.opacity(0.06)
+            Color.mabePrimary.opacity(0.04)
         case .mid:
-            Color.mabePrimary.opacity(0.09)
+            Color.mabePrimary.opacity(0.055)
         case .high:
-            Color.mabePrimary.opacity(0.14)
+            Color.mabePrimary.opacity(0.09)
         }
     }
 
     private var shadowRadius: CGFloat {
         switch elevation {
-        case .low: 8
-        case .mid: 16
-        case .high: 28
+        case .low: 6
+        case .mid: 12
+        case .high: 20
         }
     }
 
     private var shadowY: CGFloat {
         switch elevation {
-        case .low: 2
-        case .mid: 4
-        case .high: 8
+        case .low: 1
+        case .mid: 3
+        case .high: 6
         }
     }
 }
@@ -90,7 +90,7 @@ struct MabeActionCard: View {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .strokeBorder(Color.mabeBorder1, lineWidth: 0.5)
             }
-            .shadow(color: accentColor.opacity(0.07), radius: 12, x: 0, y: 3)
+            .shadow(color: accentColor.opacity(0.045), radius: 8, x: 0, y: 2)
         }
         .buttonStyle(MabePressButtonStyle(scale: 0.97))
     }

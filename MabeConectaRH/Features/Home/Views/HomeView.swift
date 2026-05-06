@@ -111,7 +111,7 @@ struct HomeView: View {
 
             compactRecentRequests
 
-            PredictiveRecommendationsView(recommendations: MockDataService.recomendacionesHome) { destination in
+            PredictiveRecommendationsView(recommendations: Array(MockDataService.recomendacionesHome.prefix(2))) { destination in
                 openRecommendation(destination)
             }
 
@@ -360,30 +360,11 @@ struct HomeView: View {
                             Spacer()
                         }
                     }
-
-                    Divider()
-
-                    HStack(spacing: 0) {
-                        miniOperationalMetric(value: "3 min", label: "Respuesta RH")
-                        Divider().frame(height: 36)
-                        miniOperationalMetric(value: "72%", label: "Automatizados")
-                    }
                 }
             }
         }
     }
 
-    private func miniOperationalMetric(value: String, label: String) -> some View {
-        VStack(spacing: 3) {
-            Text(value)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(Color.mabeBlue)
-            Text(label)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(Color.mabeGray500)
-        }
-        .frame(maxWidth: .infinity)
-    }
 }
 
 private struct HomeCustomizationSheet: View {

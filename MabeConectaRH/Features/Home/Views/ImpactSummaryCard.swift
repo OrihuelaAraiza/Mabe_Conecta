@@ -22,7 +22,7 @@ struct ImpactSummaryCard: View {
                         .clipShape(Circle())
                 }
 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
                     impactMetric(value: "2h 40min", label: "Tiempo recuperado", color: .mabeBlue)
                     impactMetric(value: "8", label: "Solicitudes resueltas", color: .mabeSuccess)
                     impactMetric(value: "3", label: "Beneficios usados", color: .mabeElectric)
@@ -43,8 +43,6 @@ struct ImpactSummaryCard: View {
                 .lineLimit(2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(color.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .padding(.vertical, 6)
     }
 }

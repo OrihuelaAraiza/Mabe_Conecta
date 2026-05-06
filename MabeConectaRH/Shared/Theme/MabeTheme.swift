@@ -130,7 +130,7 @@ enum MabeTheme {
     static let cardSpacing: CGFloat = 12
     static let cardRadius: CGFloat = 18
     static let buttonRadius: CGFloat = 14
-    static let shadow = Color.mabePrimary.opacity(0.09)
+    static let shadow = Color.mabePrimary.opacity(0.055)
 }
 
 struct MabeElevation: ViewModifier {
@@ -150,37 +150,37 @@ struct MabeElevation: ViewModifier {
     private var shadowColor: Color {
         switch level {
         case .low:
-            Color.mabePrimary.opacity(0.06)
+            Color.mabePrimary.opacity(0.04)
         case .mid:
-            Color.mabePrimary.opacity(0.09)
+            Color.mabePrimary.opacity(0.055)
         case .high:
-            Color.mabePrimary.opacity(0.14)
+            Color.mabePrimary.opacity(0.09)
         case let .colored(color, opacity):
-            color.opacity(opacity)
+            color.opacity(min(opacity, 0.16))
         }
     }
 
     private var radius: CGFloat {
         switch level {
-        case .low: 8
-        case .mid: 16
-        case .high: 28
-        case .colored: 20
+        case .low: 6
+        case .mid: 12
+        case .high: 20
+        case .colored: 14
         }
     }
 
     private var y: CGFloat {
         switch level {
-        case .low: 2
-        case .mid: 4
-        case .high, .colored: 8
+        case .low: 1
+        case .mid: 3
+        case .high, .colored: 6
         }
     }
 }
 
 extension View {
     func mabeCardShadow() -> some View {
-        shadow(color: MabeTheme.shadow, radius: 16, x: 0, y: 4)
+        shadow(color: MabeTheme.shadow, radius: 12, x: 0, y: 3)
     }
 
     func mabeElevation(_ level: MabeElevation.Level = .mid) -> some View {
