@@ -13,16 +13,31 @@ struct CuponesView: View {
     @State private var cuponesBackend: [Cupon] = []
     @State private var backendCouponIDsByUIID: [String: String] = [:]
     @State private var errorMessage: String?
+    @State private var redeemErrorMessage: String?
 
     private let api = BackendAPI()
     @Environment(\.dismiss) private var dismiss
     @Environment(RewardService.self) private var rewardService
 
+    private var allCoupons: [Cupon] {
+        cuponesBackend.isEmpty ? MockDataService.cupones : cuponesBackend
+    }
+
     private var cuponesFiltrados: [Cupon] {
-        let source = cuponesBackend.isEmpty ? MockDataService.cupones : cuponesBackend
         return selectedCategory == .todos
-            ? source
-            : source.filter { $0.categoria == selectedCategory }
+            ? allCoupons
+            : allCoupons.filter { $0.categoria == selectedCategory }
+    }
+
+    private var expiringSoonCount: Int {
+        let now = Date()
+        let sevenDaysFromNow = Calendar.current.date(byAdding: .day, value: 7, to: now) ?? now
+        return allCoupons.filter { coupon in
+            guard !redeemedCoupons.contains(coupon.id), let expiration = coupon.fechaVencimiento else {
+                return false
+            }
+            return expiration >= now && expiration <= sevenDaysFromNow
+        }.count
     }
 
     init(showsBackButton: Bool = true, title: String = "Mis Cupones") {
@@ -75,15 +90,24 @@ struct CuponesView: View {
         .task {
             await loadCoupons()
         }
+        .alert(
+            "No se pudo canjear",
+            isPresented: Binding(
+                get: { redeemErrorMessage != nil },
+                set: { if !$0 { redeemErrorMessage = nil } }
+            )
+        ) {
+            Button("Entendido", role: .cancel) { redeemErrorMessage = nil }
+        } message: {
+            Text(redeemErrorMessage ?? "Intenta de nuevo.")
+        }
         .sheet(isPresented: $showingRedeemSheet) {
             if let selectedCoupon {
                 CuponDetailSheet(
                     cupon: selectedCoupon,
                     isRedeemed: redeemedCoupons.contains(selectedCoupon.id),
                     onRedeem: {
-                        Task {
-                            await redeemCoupon(selectedCoupon)
-                        }
+                        await redeemCoupon(selectedCoupon)
                     }
                 )
                 .presentationDetents([.medium, .large])
@@ -168,12 +192,12 @@ struct CuponesView: View {
     private var benefitsSummary: some View {
         HStack(spacing: 0) {
             summaryItem(
-                value: "\(max(0, MockDataService.cupones.count - redeemedCoupons.count))",
+                value: "\(max(0, allCoupons.count - redeemedCoupons.count))",
                 label: "Disponibles",
                 color: Color(hex: "#003087")
             )
             Divider().frame(height: 38)
-            summaryItem(value: "2", label: "Por expirar", color: Color(hex: "#D97706"))
+            summaryItem(value: "\(expiringSoonCount)", label: "Por expirar", color: Color(hex: "#D97706"))
             Divider().frame(height: 38)
             summaryItem(
                 value: "\(redeemedCoupons.count)", label: "Usados", color: Color(hex: "#00C27C"))
@@ -629,9 +653,10 @@ private struct BarcodeStripes: View {
 private struct CuponDetailSheet: View {
     let cupon: Cupon
     let isRedeemed: Bool
-    let onRedeem: () -> Void
+    let onRedeem: () async -> Bool
     @Environment(\.dismiss) private var dismiss
     @State private var showingCode = false
+    @State private var isRedeeming = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -746,13 +771,25 @@ private struct CuponDetailSheet: View {
             }
         } else {
             Button {
-                onRedeem()
-                withAnimation(.spring(response: 0.4).delay(0.3)) { showingCode = true }
+                Task {
+                    guard !isRedeeming else { return }
+                    isRedeeming = true
+                    let redeemed = await onRedeem()
+                    isRedeeming = false
+                    if redeemed {
+                        withAnimation(.spring(response: 0.4)) { showingCode = true }
+                    }
+                }
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 14))
-                    Text("Canjear por \(cupon.puntosCosto) puntos")
+                    if isRedeeming {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 14))
+                    }
+                    Text(isRedeeming ? "Canjeando..." : "Canjear por \(cupon.puntosCosto) puntos")
                         .font(.system(size: 16, weight: .semibold))
                 }
                 .foregroundColor(.white)
@@ -762,14 +799,22 @@ private struct CuponDetailSheet: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .shadow(color: Color(hex: "#1976FF").opacity(0.35), radius: 12, x: 0, y: 6)
             }
+            .disabled(isRedeeming)
         }
     }
 }
 
 extension CuponesView {
+    private var localRedeemedCouponsKey: String {
+        let employeeID = SessionService.load()?.empleadoId ?? "demo"
+        return "mabe.cupones.redeemed.\(employeeID)"
+    }
+
     @MainActor
     fileprivate func loadCoupons() async {
         guard isLoadingCoupons else { return }
+        let localRedeemed = loadLocalRedeemedCoupons()
+        redeemedCoupons = localRedeemed
 
         guard let session = SessionService.load(),
             let authToken = session.authToken
@@ -788,44 +833,29 @@ extension CuponesView {
             let available = try await availableTask
             let purchased = try await purchasedTask
 
-            var mapped = available.map { $0.toCupon() }
-            var usedSet = Set<String>()
+            let mapped = available.map { $0.toCupon() }
+            var redeemedSet = localRedeemed
             var idMap: [String: String] = [:]
 
             for backendCoupon in available {
                 idMap[backendCoupon.coupon_id] = backendCoupon.coupon_id
             }
 
-            for purchase in purchased where purchase.used {
-                usedSet.insert(purchase.coupon_id)
+            for purchase in purchased {
+                redeemedSet.insert(purchase.coupon_id)
             }
 
-            mapped = mapped.map { coupon in
-                var mutable = coupon
-                if usedSet.contains(coupon.id) {
-                    mutable = Cupon(
-                        id: coupon.id,
-                        titulo: coupon.titulo,
-                        empresa: coupon.empresa,
-                        descripcion: coupon.descripcion,
-                        icon: coupon.icon,
-                        gradient: coupon.gradient,
-                        categoria: coupon.categoria,
-                        puntosCosto: coupon.puntosCosto,
-                        vencimiento: coupon.vencimiento,
-                        codigoPromo: coupon.codigoPromo,
-                        terminos: coupon.terminos
-                    )
-                }
-                return mutable
+            if let employee = try? await api.currentEmployee(authToken: authToken) {
+                rewardService.syncBackendPoints(employee.points)
             }
 
             withAnimation(.easeInOut(duration: 0.25)) {
                 cuponesBackend = mapped
-                redeemedCoupons = usedSet
+                redeemedCoupons = redeemedSet
                 backendCouponIDsByUIID = idMap
                 isLoadingCoupons = false
             }
+            saveLocalRedeemedCoupons(redeemedSet)
         } catch {
             try? await Task.sleep(nanoseconds: 180_000_000)
             withAnimation(.easeInOut(duration: 0.22)) {
@@ -836,35 +866,56 @@ extension CuponesView {
     }
 
     @MainActor
-    fileprivate func redeemCoupon(_ coupon: Cupon) async {
-        guard let session = SessionService.load(),
-            let authToken = session.authToken,
-            let backendCouponID = backendCouponIDsByUIID[coupon.id]
-        else {
-            redeemLocally(coupon)
-            return
+    fileprivate func redeemCoupon(_ coupon: Cupon) async -> Bool {
+        guard !redeemedCoupons.contains(coupon.id) else { return true }
+
+        guard rewardService.profile.puntosDisponibles >= coupon.puntosCosto else {
+            redeemErrorMessage = "No tienes puntos suficientes para canjear este cupón."
+            return false
+        }
+
+        guard let authToken = SessionService.load()?.authToken else {
+            markCouponRedeemed(coupon)
+            return true
+        }
+
+        guard let backendCouponID = backendCouponIDsByUIID[coupon.id] else {
+            redeemErrorMessage = "Este cupón no está disponible para canje en el backend."
+            return false
         }
 
         do {
             _ = try await api.buyCoupon(couponID: backendCouponID, authToken: authToken)
-            redeemLocally(coupon)
+            markCouponRedeemed(coupon)
+            if let employee = try? await api.currentEmployee(authToken: authToken) {
+                rewardService.syncBackendPoints(employee.points)
+            }
+            return true
         } catch {
-            // Keep demo resilient: local fallback if backend redemption fails
-            redeemLocally(coupon)
+            redeemErrorMessage = error.localizedDescription
+            return false
         }
     }
 
     @MainActor
-    fileprivate func redeemLocally(_ coupon: Cupon) {
+    fileprivate func markCouponRedeemed(_ coupon: Cupon) {
         redeemedCoupons.insert(coupon.id)
-        rewardService.ganarPuntos(
-            tipo: .cuponCanjeado,
-            descripcion: "Cupón canjeado: \(coupon.titulo)"
-        )
+        saveLocalRedeemedCoupons(redeemedCoupons)
         rewardService.canjearPuntos(coupon.puntosCosto)
-        showingRedeemSheet = false
+        SessionService.saveBackendPoints(rewardService.profile.puntosDisponibles)
         confettiCounter += 1
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
+    private func loadLocalRedeemedCoupons() -> Set<String> {
+        guard let values = UserDefaults.standard.array(forKey: localRedeemedCouponsKey) as? [String] else {
+            return []
+        }
+        return Set(values)
+    }
+
+    private func saveLocalRedeemedCoupons(_ couponIDs: Set<String>) {
+        UserDefaults.standard.set(Array(couponIDs), forKey: localRedeemedCouponsKey)
     }
 }
 

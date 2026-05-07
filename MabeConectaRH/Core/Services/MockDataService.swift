@@ -46,19 +46,77 @@ struct MockDataService {
         diasVacacionesTotales: 15
     )
 
+    static let directorioEmpleados: [Empleado] = [
+        empleadoActual,
+        Empleado(
+            id: "10234",
+            nombre: "Miguel",
+            apellidos: "Torres Reyes",
+            puesto: "Operador de Producción",
+            departamento: "Línea B",
+            planta: "Planta Querétaro",
+            diasVacacionesDisponibles: 8,
+            diasVacacionesTotales: 15
+        ),
+        Empleado(
+            id: "10891",
+            nombre: "Ana",
+            apellidos: "Pérez Morales",
+            puesto: "Técnico de Calidad",
+            departamento: "Control de Calidad",
+            planta: "Planta Querétaro",
+            diasVacacionesDisponibles: 15,
+            diasVacacionesTotales: 15
+        ),
+        Empleado(
+            id: "11045",
+            nombre: "Roberto",
+            apellidos: "Sosa Jiménez",
+            puesto: "Operador Senior",
+            departamento: "Línea A",
+            planta: "Planta Querétaro",
+            diasVacacionesDisponibles: 5,
+            diasVacacionesTotales: 15
+        ),
+        Empleado(
+            id: "11203",
+            nombre: "Daniela",
+            apellidos: "Ríos Castro",
+            puesto: "Técnico de Mantenimiento",
+            departamento: "Mantenimiento",
+            planta: "Planta Querétaro",
+            diasVacacionesDisponibles: 12,
+            diasVacacionesTotales: 15
+        )
+    ]
+
     static let chatsEscalados: [ChatEscalado] = [
         ChatEscalado(
             empleadoNombre: "Miguel Torres",
             empleadoId: "10234",
             ultimoMensaje: "No reconozco el descuento en mi nómina de noviembre",
-            fecha: Date(),
+            fecha: Date().addingTimeInterval(-300),
             urgencia: .alta
         ),
         ChatEscalado(
             empleadoNombre: "Ana Pérez",
             empleadoId: "10891",
             ultimoMensaje: "¿Pueden darme constancia con sueldo esta semana?",
-            fecha: Date(),
+            fecha: Date().addingTimeInterval(-1380),
+            urgencia: .normal
+        ),
+        ChatEscalado(
+            empleadoNombre: "Roberto Sosa",
+            empleadoId: "11045",
+            ultimoMensaje: "Permiso por enfermedad familiar urgente",
+            fecha: Date().addingTimeInterval(-3600),
+            urgencia: .alta
+        ),
+        ChatEscalado(
+            empleadoNombre: "Daniela Ríos",
+            empleadoId: "11203",
+            ultimoMensaje: "¿Cuándo se activa mi seguro médico?",
+            fecha: Date().addingTimeInterval(-7200),
             urgencia: .normal
         )
     ]
@@ -480,6 +538,7 @@ struct MockDataService {
             categoria: .tienda,
             puntosCosto: 50,
             vencimiento: "31 dic",
+            fechaVencimiento: nil,
             codigoPromo: "MABE20OXX",
             terminos: ["Válido en tiendas participantes", "No combinable con otras promociones", "Una sola vez por empleado"]
         ),
@@ -493,6 +552,7 @@ struct MockDataService {
             categoria: .transporte,
             puntosCosto: 80,
             vencimiento: "15 dic",
+            fechaVencimiento: nil,
             codigoPromo: "MABERIDE1",
             terminos: ["Máximo $120 MXN", "Solo viajes en México", "Válido 30 días tras canje"]
         ),
@@ -506,6 +566,7 @@ struct MockDataService {
             categoria: .salud,
             puntosCosto: 120,
             vencimiento: "28 feb",
+            fechaVencimiento: nil,
             codigoPromo: "MABEHLTH1",
             terminos: ["Solo consulta general", "Válido por videollamada", "Agenda tu cita en la app"]
         ),
@@ -519,6 +580,7 @@ struct MockDataService {
             categoria: .entretenimiento,
             puntosCosto: 100,
             vencimiento: "31 ene",
+            fechaVencimiento: nil,
             codigoPromo: "MABE2X1CN",
             terminos: ["No aplica en estrenos", "Solo fines de semana", "Presentar código en taquilla"]
         ),
@@ -532,6 +594,7 @@ struct MockDataService {
             categoria: .comida,
             puntosCosto: 60,
             vencimiento: "20 dic",
+            fechaVencimiento: nil,
             codigoPromo: "MABERAPPI",
             terminos: ["Pedido mínimo $200", "Solo comida, no mercado", "No aplica en Turbo"]
         ),
@@ -545,6 +608,7 @@ struct MockDataService {
             categoria: .salud,
             puntosCosto: 200,
             vencimiento: "31 mar",
+            fechaVencimiento: nil,
             codigoPromo: "MABEFIT01",
             terminos: ["Solo membresías nuevas", "Aplica plan Black", "Canjear en sucursal"]
         )

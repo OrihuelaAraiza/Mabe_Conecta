@@ -3,6 +3,7 @@ import SwiftUI
 struct LoginView: View {
     @Environment(AppState.self) private var appState
     @Environment(UserPreferencesStore.self) private var preferencesStore
+    @Environment(RewardService.self) private var rewardService
     @State private var viewModel = LoginViewModel()
     @State private var didAppear = false
     @State private var isRHMode = false
@@ -104,7 +105,10 @@ struct LoginView: View {
                                         preferencesStore.hasCompletedOnboarding
                                     appState.signIn(
                                         user: result.empleado, role: result.role, isDemo: false,
-                                        authToken: result.token)
+                                        authToken: result.token,
+                                        backendPoints: result.points
+                                    )
+                                    rewardService.syncBackendPoints(result.points)
                                 }
                             }
                         }
@@ -237,6 +241,7 @@ struct LoginView: View {
         MabeHaptics.shared.loginSuccess()
         appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
         appState.signIn(user: user, role: role, isDemo: true)
+        rewardService.resetToDemoProfile()
     }
 }
 

@@ -740,3 +740,213 @@ extension String {
         return value.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
+
+struct RHChatListView: View {
+    @State private var chatsActivos = MockDataService.chatsEscalados
+    @State private var filtro: FiltroChat = .todos
+    @State private var selectedChat: ChatEscalado?
+
+    enum FiltroChat: String, CaseIterable {
+        case todos = "Todos"
+        case urgentes = "Urgentes"
+        case resueltos = "Resueltos"
+    }
+
+    private var chatsFiltrados: [ChatEscalado] {
+        switch filtro {
+        case .todos:
+            chatsActivos
+        case .urgentes:
+            chatsActivos.filter { $0.urgencia == .alta && !$0.resuelto }
+        case .resueltos:
+            chatsActivos.filter(\.resuelto)
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Chats RH")
+                    .font(.mabeH2)
+                    .foregroundColor(.mabeText1)
+                Spacer()
+                Text("\(chatsActivos.filter { !$0.resuelto }.count) activos")
+                    .font(.mabeLabelLg)
+                    .foregroundColor(Color(hex: "#D97706"))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(hex: "#FAEEDA"))
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
+            .background(Color.mabeBase)
+
+            Picker("", selection: $filtro) {
+                ForEach(FiltroChat.allCases, id: \.self) { item in
+                    Text(item.rawValue).tag(item)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 12)
+
+            if chatsFiltrados.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "bubble.left.and.bubble.right")
+                        .font(.system(size: 40))
+                        .foregroundColor(.mabeText4)
+                    Text("Sin chats en esta categoría")
+                        .font(.mabeLabelLg)
+                        .foregroundColor(.mabeText3)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        ForEach(chatsFiltrados) { chat in
+                            ChatEscaladoRow(
+                                chat: chat,
+                                onResponder: { selectedChat = chat },
+                                onResolver: {
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
+                                        if let index = chatsActivos.firstIndex(where: { $0.id == chat.id }) {
+                                            chatsActivos[index].resuelto = true
+                                        }
+                                    }
+                                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    .padding(.bottom, 100)
+                }
+            }
+        }
+        .background(Color.mabeBase)
+        .navigationBarHidden(true)
+        .sheet(item: $selectedChat) { chat in
+            RHChatDetailSheet(chat: chat)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
+        }
+    }
+}
+
+private struct ChatEscaladoRow: View {
+    let chat: ChatEscalado
+    let onResponder: () -> Void
+    let onResolver: () -> Void
+    @State private var showingAcciones = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
+                    showingAcciones.toggle()
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(avatarBackground)
+                            .frame(width: 44, height: 44)
+                        Text(chat.iniciales)
+                            .font(.mabeLabelLg)
+                            .foregroundColor(avatarColor)
+                    }
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 6) {
+                            Text(chat.empleadoNombre)
+                                .font(.mabeLabelLg)
+                                .foregroundColor(.mabeText1)
+                            if chat.resuelto {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color(hex: "#00875A"))
+                            }
+                        }
+                        Text(chat.ultimoMensaje)
+                            .font(.mabeBody)
+                            .foregroundColor(.mabeText3)
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(chat.tiempoRelativo)
+                            .font(.mabeLabelSm)
+                            .foregroundColor(.mabeText4)
+                        if !chat.resuelto && chat.urgencia == .alta {
+                            PulsingDot(color: Color(hex: "#F03E3E"))
+                        }
+                    }
+                }
+                .padding(14)
+                .opacity(chat.resuelto ? 0.6 : 1)
+            }
+            .buttonStyle(.plain)
+
+            if showingAcciones && !chat.resuelto {
+                Divider().opacity(0.3).padding(.horizontal, 14)
+                HStack(spacing: 8) {
+                    Button {
+                        withAnimation { showingAcciones = false }
+                        onResponder()
+                    } label: {
+                        Label("Responder", systemImage: "bubble.left.fill")
+                            .font(.mabeLabelLg)
+                            .foregroundColor(Color(hex: "#003087"))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 36)
+                            .background(Color(hex: "#EFF3FA"))
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        withAnimation { showingAcciones = false }
+                        onResolver()
+                    } label: {
+                        Label("Marcar resuelto", systemImage: "checkmark")
+                            .font(.mabeLabelLg)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 36)
+                            .background(Color(hex: "#00875A"))
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .background(Color.mabeSurface0)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(!chat.resuelto && chat.urgencia == .alta ? Color(hex: "#F03E3E").opacity(0.3) : Color.mabeBorder1, lineWidth: 0.5)
+        }
+        .shadow(color: Color(hex: "#0D1B3E").opacity(0.05), radius: 8, x: 0, y: 2)
+        .animation(.spring(response: 0.3, dampingFraction: 0.82), value: showingAcciones)
+    }
+
+    private var avatarBackground: Color {
+        if chat.resuelto { return Color(hex: "#00875A").opacity(0.1) }
+        if chat.urgencia == .alta { return Color(hex: "#F03E3E").opacity(0.1) }
+        return Color.mabeSurface1
+    }
+
+    private var avatarColor: Color {
+        if chat.resuelto { return Color(hex: "#00875A") }
+        if chat.urgencia == .alta { return Color(hex: "#F03E3E") }
+        return Color(hex: "#003087")
+    }
+}

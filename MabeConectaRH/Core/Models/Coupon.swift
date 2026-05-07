@@ -67,6 +67,7 @@ struct Cupon: Identifiable {
     let categoria: CuponCategory
     let puntosCosto: Int
     let vencimiento: String
+    let fechaVencimiento: Date?
     let codigoPromo: String
     let terminos: [String]
 }

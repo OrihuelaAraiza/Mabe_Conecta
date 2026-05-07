@@ -58,12 +58,24 @@ final class AppState {
         isDemoMode = session.isDemoMode
     }
 
-    func signIn(user: Empleado, role: UserRole, isDemo: Bool, authToken: String? = nil) {
+    func signIn(
+        user: Empleado,
+        role: UserRole,
+        isDemo: Bool,
+        authToken: String? = nil,
+        backendPoints: Int? = nil
+    ) {
         currentUser = user
         userRole = role
         isDemoMode = isDemo
         SessionService.save(
-            empleadoId: user.id, rol: role, isDemoMode: isDemo, authToken: authToken, user: user)
+            empleadoId: user.id,
+            rol: role,
+            isDemoMode: isDemo,
+            authToken: authToken,
+            backendPoints: backendPoints,
+            user: user
+        )
     }
 
     func signOut() {
@@ -104,14 +116,23 @@ final class AppState {
     }
 
     func toggleDemoRole() {
-        userRole = userRole == .empleado ? .agenteRH : .empleado
-        if let currentUser {
-            let authToken = SessionService.load()?.authToken
-            let chatSessionId = SessionService.load()?.chatSessionId
-            SessionService.save(
-                empleadoId: currentUser.id, rol: userRole, isDemoMode: isDemoMode,
-                authToken: authToken, chatSessionId: chatSessionId, user: currentUser)
-        }
+        let nextRole: UserRole = userRole == .empleado ? .agenteRH : .empleado
+        let nextUser = nextRole == .agenteRH ? MockDataService.agenteRH : MockDataService.empleadoActual
+        let authToken = SessionService.load()?.authToken
+        let chatSessionId = SessionService.load()?.chatSessionId
+        let backendPoints = SessionService.load()?.backendPoints
+
+        currentUser = nextUser
+        userRole = nextRole
+        SessionService.save(
+            empleadoId: nextUser.id,
+            rol: nextRole,
+            isDemoMode: isDemoMode,
+            authToken: authToken,
+            backendPoints: backendPoints,
+            chatSessionId: chatSessionId,
+            user: nextUser
+        )
         showToast("👤 Rol: \(userRole.displayName)")
     }
 

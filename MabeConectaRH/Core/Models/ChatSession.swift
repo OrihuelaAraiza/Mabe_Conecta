@@ -38,4 +38,17 @@ struct ChatEscalado: Identifiable, Hashable {
     let ultimoMensaje: String
     let fecha: Date
     let urgencia: ChatUrgencia
+    var resuelto: Bool = false
+
+    var iniciales: String {
+        empleadoNombre.split(separator: " ").prefix(2)
+            .compactMap { $0.first }
+            .map { String($0) }
+            .joined()
+            .uppercased()
+    }
+
+    var tiempoRelativo: String {
+        fecha.formatted(.relative(presentation: .named))
+    }
 }

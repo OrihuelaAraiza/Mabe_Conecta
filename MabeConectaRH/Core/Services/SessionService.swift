@@ -5,6 +5,7 @@ struct SessionData: Codable {
     let rol: String
     let isDemoMode: Bool
     let authToken: String?
+    let backendPoints: Int?
     let chatSessionId: String?
     let user: Empleado?
     let timestamp: Date
@@ -17,13 +18,14 @@ enum SessionService {
 
     static func save(
         empleadoId: String, rol: UserRole, isDemoMode: Bool, authToken: String? = nil,
-        chatSessionId: String? = nil, user: Empleado? = nil
+        backendPoints: Int? = nil, chatSessionId: String? = nil, user: Empleado? = nil
     ) {
         let session = SessionData(
             empleadoId: empleadoId,
             rol: rol == .agenteRH ? "rh" : "empleado",
             isDemoMode: isDemoMode,
             authToken: authToken,
+            backendPoints: backendPoints,
             chatSessionId: chatSessionId,
             user: user,
             timestamp: Date()
@@ -56,6 +58,7 @@ enum SessionService {
             rol: session.rol,
             isDemoMode: session.isDemoMode,
             authToken: session.authToken,
+            backendPoints: session.backendPoints,
             chatSessionId: sessionId,
             user: session.user,
             timestamp: Date()
@@ -83,6 +86,25 @@ enum SessionService {
 
         if let data = try? JSONEncoder().encode(messages) {
             UserDefaults.standard.set(data, forKey: chatKey)
+        }
+    }
+
+    static func saveBackendPoints(_ points: Int) {
+        guard var session = load() else { return }
+
+        session = SessionData(
+            empleadoId: session.empleadoId,
+            rol: session.rol,
+            isDemoMode: session.isDemoMode,
+            authToken: session.authToken,
+            backendPoints: points,
+            chatSessionId: session.chatSessionId,
+            user: session.user,
+            timestamp: Date()
+        )
+
+        if let data = try? JSONEncoder().encode(session) {
+            UserDefaults.standard.set(data, forKey: key)
         }
     }
 

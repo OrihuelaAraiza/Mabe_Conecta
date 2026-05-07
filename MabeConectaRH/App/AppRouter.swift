@@ -41,6 +41,7 @@ struct AppRouter: View {
         }
         .onAppear {
             appState.hasCompletedOnboarding = preferencesStore.hasCompletedOnboarding
+            rewardService.syncFromStoredSessionIfAvailable()
             scheduleDemoToastIfNeeded()
         }
     }
@@ -81,7 +82,11 @@ struct MainTabView: View {
                             }
                         }
                     case .assistant:
-                        ChatView()
+                        if appState.userRole == .agenteRH {
+                            RHChatListView()
+                        } else {
+                            ChatView()
+                        }
                     case .benefits:
                         BenefitsView()
                     case .rh:

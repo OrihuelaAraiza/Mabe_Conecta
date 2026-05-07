@@ -64,7 +64,22 @@ final class RewardService {
     func canjearPuntos(_ cantidad: Int) {
         guard cantidad > 0 else { return }
         profile.puntosDisponibles = max(0, profile.puntosDisponibles - cantidad)
+        profile.puntosAcumulados = max(profile.puntosAcumulados, profile.puntosDisponibles)
         save()
+    }
+
+    func syncBackendPoints(_ points: Int) {
+        profile.puntosDisponibles = max(0, points)
+        profile.puntosAcumulados = max(profile.puntosAcumulados, profile.puntosDisponibles)
+        profile.recalcularTier()
+        checkLogros()
+        save()
+        SessionService.saveBackendPoints(profile.puntosDisponibles)
+    }
+
+    func syncFromStoredSessionIfAvailable() {
+        guard let points = SessionService.load()?.backendPoints else { return }
+        syncBackendPoints(points)
     }
 
     func registrarCheckinBienestar(moodLabel: String) {

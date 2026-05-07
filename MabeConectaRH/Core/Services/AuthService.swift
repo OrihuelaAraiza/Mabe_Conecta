@@ -11,6 +11,7 @@ struct AuthResult {
     let empleado: Empleado
     let role: UserRole
     let token: String
+    let points: Int
 }
 
 struct AuthService {
@@ -21,7 +22,12 @@ struct AuthService {
             let response = try await api.login(employeeNumber: numero, nip: nip)
             let empleado = response.employee.toEmpleado()
             let role: UserRole = numero == "99001" ? .agenteRH : .empleado
-            return AuthResult(empleado: empleado, role: role, token: response.token)
+            return AuthResult(
+                empleado: empleado,
+                role: role,
+                token: response.token,
+                points: response.employee.points
+            )
         } catch let error as BackendError {
             throw AuthError.backend(error.localizedDescription)
         } catch {
@@ -110,6 +116,12 @@ struct BackendAPI {
         let body = BuyCouponRequest(coupon_id: couponID)
         let response: Envelope<BackendEmployeeCoupon> = try await send(
             path: "/api/coupons/buy", method: "POST", body: body, authToken: authToken)
+        return response.data
+    }
+
+    func currentEmployee(authToken: String) async throws -> BackendEmployee {
+        let response: Envelope<BackendEmployee> = try await send(
+            path: "/api/auth/me", method: "GET", body: Optional<String>.none, authToken: authToken)
         return response.data
     }
 
@@ -448,7 +460,8 @@ extension BackendEmployee {
 
 extension BackendCoupon {
     func toCupon() -> Cupon {
-        Cupon(
+        let expirationDate = expiry_date.flatMap { BackendAPIDate.day.date(from: $0) }
+        return Cupon(
             id: coupon_id,
             titulo: title,
             empresa: brand ?? "Mabe",
@@ -458,6 +471,7 @@ extension BackendCoupon {
             categoria: cuponCategoryForBackend(category),
             puntosCosto: points_value,
             vencimiento: shortExpiration(expiry_date),
+            fechaVencimiento: expirationDate,
             codigoPromo: code,
             terminos: [
                 "Sujeto a disponibilidad",
@@ -525,7 +539,7 @@ enum BackendAPIDate {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.timeZone = Calendar.current.timeZone
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
